@@ -1,0 +1,584 @@
+\documentclass[10pt, letterpaper]{article}
+
+% Packages:
+\usepackage[
+    ignoreheadfoot, % set margins without considering header and footer
+    top=2 cm, % separation between body and page edge from the top
+    bottom=2 cm, % separation between body and page edge from the bottom
+    left=2 cm, % separation between body and page edge from the left
+    right=2 cm, % separation between body and page edge from the right
+    footskip=1.0 cm, % separation between body and footer
+    % showframe % for debugging
+]{geometry} % for adjusting page geometry
+\usepackage{titlesec} % for customizing section titles
+\usepackage{tabularx} % for making tables with fixed width columns
+\usepackage{array} % tabularx requires this
+\usepackage[dvipsnames]{xcolor} % for coloring text
+\definecolor{primaryColor}{RGB}{0, 79, 144} % define primary color
+\usepackage{enumitem} % for customizing lists
+\usepackage{fontawesome5} % for using icons
+\usepackage{amsmath} % for math
+\usepackage[
+    pdftitle={Suhwan Choi's CV},
+    pdfauthor={Suhwan Choi},
+    pdfcreator={LaTeX with RenderCV},
+    colorlinks=true,
+    urlcolor=primaryColor
+]{hyperref} % for links, metadata and bookmarks
+\usepackage[pscoord]{eso-pic} % for floating text on the page
+\usepackage{calc} % for calculating lengths
+\usepackage{bookmark} % for bookmarks
+\usepackage{lastpage} % for getting the total number of pages
+\usepackage{changepage} % for one column entries (adjustwidth environment)
+\usepackage{paracol} % for two and three column entries
+\usepackage{ifthen} % for conditional statements
+\usepackage{needspace} % for avoiding page break right after the section title
+\usepackage{iftex} % check if engine is pdflatex, xetex or luatex
+
+% Ensure that generated pdf is machine readable/ATS parsable:
+\ifPDFTeX
+    \input{glyphtounicode}
+    \pdfgentounicode=1
+    % \usepackage[T1]{fontenc} % this breaks sb2nov
+    \usepackage[utf8]{inputenc}
+    \usepackage{lmodern}
+\fi
+
+% Some settings:
+\AtBeginEnvironment{adjustwidth}{\partopsep0pt} % remove space before adjustwidth environment
+\pagestyle{empty} % no header or footer
+\setcounter{secnumdepth}{0} % no section numbering
+\setlength{\parindent}{0pt} % no indentation
+\setlength{\topskip}{0pt} % no top skip
+\setlength{\columnsep}{0cm} % set column separation
+\makeatletter
+\let\ps@customFooterStyle\ps@plain % Copy the plain style to customFooterStyle
+\patchcmd{\ps@customFooterStyle}{\thepage}{
+    \color{gray}\textit{\small Suhwan Choi - Page \thepage{} of \pageref*{LastPage}}
+}{}{} % replace number by desired string
+\makeatother
+\pagestyle{customFooterStyle}
+
+\titleformat{\section}{\needspace{4\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{1pt}\titlerule]
+
+\titlespacing{\section}{
+    % left space:
+    -1pt
+}{
+    % top space:
+    0.3 cm
+}{
+    % bottom space:
+    0.2 cm
+} % section title spacing
+
+\renewcommand\labelitemi{$\circ$} % custom bullet points
+\newenvironment{highlights}{
+    \begin{itemize}[
+        topsep=0.10 cm,
+        parsep=0.10 cm,
+        partopsep=0pt,
+        itemsep=0pt,
+        leftmargin=0.4 cm + 10pt
+    ]
+}{
+    \end{itemize}
+} % new environment for highlights
+
+\newenvironment{highlightsforbulletentries}{
+    \begin{itemize}[
+        topsep=0.10 cm,
+        parsep=0.10 cm,
+        partopsep=0pt,
+        itemsep=0pt,
+        leftmargin=10pt
+    ]
+}{
+    \end{itemize}
+} % new environment for highlights for bullet entries
+
+\newenvironment{onecolentry}{
+    \begin{adjustwidth}{
+        0.2 cm + 0.00001 cm
+    }{
+        0.2 cm + 0.00001 cm
+    }
+}{
+    \end{adjustwidth}
+} % new environment for one column entries
+
+\newenvironment{twocolentry}[2][]{
+    \onecolentry
+    \def\secondColumn{#2}
+    \setcolumnwidth{\fill, 4.5 cm}
+    \begin{paracol}{2}
+}{
+    \switchcolumn \raggedleft \secondColumn
+    \end{paracol}
+    \endonecolentry
+} % new environment for two column entries
+
+\newenvironment{header}{
+    \setlength{\topsep}{0pt}\par\kern\topsep\centering\linespread{1.5}
+}{
+    \par\kern\topsep
+} % new environment for the header
+
+\newcommand{\placelastupdatedtext}{% \placetextbox{<horizontal pos>}{<vertical pos>}{<stuff>}
+  \AddToShipoutPictureFG*{% Add <stuff> to current page foreground
+    \put(
+        \LenToUnit{\paperwidth-2 cm-0.2 cm+0.05cm},
+        \LenToUnit{\paperheight-1.0 cm}
+    ){\vtop{{\null}\makebox[0pt][c]{
+        \small\color{gray}\textit{Last updated in 2025.10.16}\hspace{\widthof{Last updated in 2025.10.16}}
+    }}}%
+  }%
+}%
+
+% save the original href command in a new command:
+\let\hrefWithoutArrow\href
+
+% new command for external links:
+\renewcommand{\href}[2]{\hrefWithoutArrow{#1}{\ifthenelse{\equal{#2}{}}{ }{#2 }\raisebox{.15ex}{\footnotesize \faExternalLink*}}}
+
+\begin{document}
+\newcommand{\AND}{\unskip
+    \cleaders\copy\ANDbox\hskip\wd\ANDbox
+    \ignorespaces
+}
+\newsavebox\ANDbox
+\sbox\ANDbox{}
+
+\placelastupdatedtext
+\begin{header}
+    \textbf{\fontsize{24 pt}{24 pt}\selectfont Suhwan Choi}
+
+    \vspace{0.3 cm}
+
+    \normalsize
+    \mbox{{\color{black}\footnotesize\faMapMarker*}\hspace*{0.13cm}Seoul, South Korea}%
+    \kern 0.25 cm%
+    \AND%
+    \kern 0.25 cm%
+    \mbox{\hrefWithoutArrow{mailto:milkclouds00@gmail.com}{\color{black}{\footnotesize\faEnvelope[regular]}\hspace*{0.13cm}milkclouds00@gmail.com}}%
+    \kern 0.25 cm%
+    \AND%
+    \kern 0.25 cm%
+    \mbox{\hrefWithoutArrow{https://www.linkedin.com/in/suhwan-choi-5a0461204/}{\color{black}{\footnotesize\faLinkedin}\hspace*{0.13cm}Suhwan Choi}}%
+    \kern 0.25 cm%
+    \AND%
+    \kern 0.25 cm%
+    \mbox{\hrefWithoutArrow{https://milkclouds.work}{\color{black}{\footnotesize\faLink}\hspace*{0.13cm}milkclouds.work}}%
+    \kern 0.25 cm%
+    \AND%
+    \kern 0.25 cm%
+    \mbox{\hrefWithoutArrow{https://github.com/MilkClouds}{\color{black}{\footnotesize\faGithub}\hspace*{0.13cm}milkclouds}}%
+\end{header}
+
+\vspace{0.3 cm - 0.3 cm}
+
+\section{Summary}
+
+\begin{onecolentry}
+    I am an undergraduate student majoring in Physics and Computer Science at Seoul National University.
+    My main area of interest is approximating and imitating human behavior and intelligence in multmodal modalities, utilizing end-to-end architectures and scalable training suites.
+\end{onecolentry}
+
+\section{Experience}
+
+\begin{twocolentry}{
+        \textit{Feb 2024 – Present}
+    }
+    \textbf{Principal Researcher}
+    \\
+    \textit{Maum.ai}
+\end{twocolentry}
+
+\vspace{0.10 cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Founded autonomous robotics research division as the first researcher, leading strategic decisions and team expansion to 10 researchers.
+        \item Contributed as first author to majority of research projects in robotic navigation and embodied ai.
+        \item Led CORE: Slurm-based DGX Cluster construction project (96 H100 GPUs, 12 nodes). \href{https://worv.ghost.io/core-construction/}{[Blog]}
+        \item \mbox{Implemented company-wide Notion workspace enhancing productivity, streamlining workflows.} \href{https://milkclouds.notion.site/DBs-template-1816b908318e809e9f93ecbfe7d4ca86}{[Template]}
+    \end{highlights}
+\end{onecolentry}
+
+\vspace{0.2 cm}
+
+\begin{twocolentry}{
+        \textit{July 2023 – Jan 2024}
+    }
+    \textbf{Machine Learning Engineer Intern}
+    \\
+    \textit{Hyperconnect}
+\end{twocolentry}
+
+\vspace{0.10 cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Worked on diffusion-based personalized profile image generation for real-world applications. The output images were conditioned not only on prompts but also on the face in the input image.
+    \end{highlights}
+\end{onecolentry}
+
+\section{Publications}
+
+\begin{samepage}
+    \begin{twocolentry}{
+            1st author
+        }
+        \textbf{D2E: Scaling Vision-Action Pretraining on Desktop Data for Transfer to Embodied AI} \href{https://worv-ai.github.io/d2e/}{[Website]}
+
+        \vspace{0.10 cm}
+
+        \small \textbf{Suhwan Choi}*, Jaeyoon Jung*, Haebin Seong*, Minchan Kim, Minyeong Kim, Yongjun Cho, Yoonshik Kim, Yubeen Park, Youngjae Yu†, Yunsung Lee†
+
+        \vspace{0.10 cm}
+
+        Under Review
+    \end{twocolentry}
+\end{samepage}
+
+\vspace{0.2 cm}
+
+\begin{samepage}
+    \begin{twocolentry}{
+            1st author
+        }
+        \textbf{CANVAS: Commonsense-Aware Navigation System for Intuitive Human-Robot Interaction} \href{https://worv-ai.github.io/canvas/}{[Website]}
+
+        \vspace{0.10 cm}
+
+        \small \textbf{Suhwan Choi}*, Yongjun Cho*, Minchan Kim*, Jaeyoon Jung*, Myunchul Joe, Yubeen Park, Minseo Kim, Sungwoong Kim, Sungjae Lee, Hwiseong Park, Jiwan Chung, Youngjae Yu†
+
+        \vspace{0.10 cm}
+
+        ICRA 2025 \\
+        Workshop on Open-World Agents at NeurIPS 2024 \textcolor{red}{\textbf{(Outstanding paper Awards, 3\%)}}
+    \end{twocolentry}
+\end{samepage}
+
+\vspace{0.2 cm}
+
+\begin{samepage}
+    \begin{twocolentry}{
+            4th author
+        }
+        \textbf{Revisiting Residual Connections: Orthogonal Updates for Stable and Efficient Deep Networks}
+
+        \vspace{0.10 cm}
+
+        \small Giyeong Oh, Woohyun Cho, Siyeol Kim, \textbf{Suhwan Choi}, Youngjae Yu†
+
+        \vspace{0.10 cm}
+
+        NeurIPS 2025
+    \end{twocolentry}
+\end{samepage}
+
+\vspace{0.2 cm}
+
+\begin{samepage}
+    \begin{twocolentry}{
+            2nd author
+        }
+        \textbf{ESREAL: Exploiting Semantic Reconstruction to Mitigate Hallucinations in Vision-Language Models}
+
+        \vspace{0.10 cm}
+
+        \small Minchan Kim*, Minyeong Kim*, Junik Bae*, \textbf{Suhwan Choi}, Sungkyung Kim, Buru Chang†
+
+        \vspace{0.10 cm}
+
+        ECCV 2024
+    \end{twocolentry}
+\end{samepage}
+
+\section{Education}
+
+\begin{twocolentry}{
+        \textit{2021 – Present}
+    }
+    \textbf{Seoul National University}
+
+    \textit{B.S in Physics \& Computer Science and Engineering}
+\end{twocolentry}
+
+
+\section{Awards}
+
+\begin{twocolentry}{
+        \textit{2023 and 2024}
+    }
+    \textbf{QHack Coding Challenge \href{https://qhack.ai}{[link]}}
+\end{twocolentry}
+
+\vspace{0.10 cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Ranked \textbf{4th/793} teams in 2023, Ranked \textbf{3rd/618} teams in 2024.
+        \item This is a contest implementing quantum algorithms, quantum machine learning, quantum chemistry, and brain-teasing puzzles.
+    \end{highlights}
+\end{onecolentry}
+
+\vspace{0.2 cm}
+
+\begin{twocolentry}{
+        \textit{2023}
+    }
+    \textbf{2023 Quantum Hackathon \href{https://qhackathon.kr/}{[link]}}
+\end{twocolentry}
+
+\vspace{0.10 cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item \textbf{1st place, Minister of Science and ICT Award}
+        \item Topic: Utilizing symmetry to solve variational quantum algorithm (quantum machine learning) efficiently.
+    \end{highlights}
+\end{onecolentry}
+
+\vspace{0.2 cm}
+
+\begin{twocolentry}{
+        \textit{July 2022 – Sept 2022}
+    }
+    \textbf{NAVER CLOVA AI RUSH 2022 \href{https://campaign.naver.com/clova_airush/}{[link]}}
+\end{twocolentry}
+
+\vspace{0.10 cm}
+\begin{onecolentry}
+    \begin{highlights}
+        % So sad to commenting out details because these are old, less-important details :(
+        \item \textbf{3rd place} on Landmark Detection (3,000,000 KRW)
+        % \begin{highlights}
+        %     \item Classical one-object detection problem.
+        %     \item Used mmdetection (mmdet). Since CLOVA uses custom ML platform named \texttt{NSML}, built custom Docker image for \texttt{NSML} and implemented hook on mmdet to integrate mmdet with \texttt{NSML} training/testing pipeline.
+        % \end{highlights}
+        \item \textbf{2nd place} on Shopping User Embedding Extraction, Classification (7,000,000 KRW)
+        % \begin{highlights}
+        %     \item 1.2M unlabeled data, 2k labeled training data, 10-class time-series classification problem.
+        %     \item MLM pretraining on 1.2M unlabeled data and augmentation on 2k labeled training data was the key.
+        % \end{highlights}
+    \end{highlights}
+\end{onecolentry}
+
+\vspace{0.2 cm}
+
+\begin{twocolentry}{
+        \textit{2022}
+    }
+    \textbf{Google Codejam 2022}
+\end{twocolentry}
+
+\vspace{0.10 cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Round 3, 546th (awarded T-Shirt).
+    \end{highlights}
+\end{onecolentry}
+
+\section{Activities}
+
+% ========================================
+% OPEN SOURCE CONTRIBUTION RECORD
+% ========================================
+%
+% Last updated: 2025-10-16
+%
+% How to update:
+%    - List up issues and PRs in date order. During retrieval use `gh`
+%    - Listing format: (TODO) (Include title, date, status, ... and brief description)
+%    - On summary, describe statistics of contributions
+%    - For proprietary contribution, ONLY list up statistics on summary, and do not include any details.
+%
+% ========================================
+% DETAILED CONTRIBUTION LIST (Recent to Old):
+%
+% === 2025 ===
+% 2025-10-16: open-world-agents/open-world-agents#186 - refactor: enhance documentation validation system and add core utilities (merged)
+% 2025-10-15: MaumAI-Company/closed-world-agents#51 - refactor: FSL dataset processing reorganization and dependency management (merged)
+% 2025-10-13: open-world-agents/open-world-agents#185 - Sync from CWA (merged)
+% 2025-10-11: open-world-agents/open-world-agents#183 - Move ocap to separate repository (merged)
+% 2025-10-10: open-world-agents/open-world-agents#182 - test: add serialization tests for dataset transforms (merged)
+% 2025-10-02: open-world-agents/open-world-agents#181 - Fix FSL transform implementation (merged)
+% 2025-10-02: open-world-agents/open-world-agents#180 - 🔧 Minor Improvements to mcap-owa-support (merged)
+% 2025-09-24: open-world-agents/open-world-agents#179 - Sync changes from proprietary to main (merged)
+% 2025-09-19: open-world-agents/open-world-agents#178 - Fix mcap convert to save subtitle in time order (merged)
+% 2025-09-17: open-world-agents/open-world-agents#177 - feat: implement keyboard uniform resampler (merged)
+% 2025-09-11: open-world-agents/open-world-agents#176 - refactor: restructure data processing pipeline modules (merged)
+% 2025-09-09: linkedin/Liger-Kernel#878 - Add InternVL3 support (merged)
+% 2025-09-04: open-world-agents/open-world-agents#175 - feat(fsl): enhance FSL dataset configuration with improved action topic management (merged)
+% 2025-09-04: open-world-agents/open-world-agents#174 - feat: CLI improvements with auto-detection and URI renaming (merged)
+% 2025-09-04: open-world-agents/open-world-agents#173 - feat: completely remove old module-based message system support (merged)
+% 2025-08-31: open-world-agents/open-world-agents#172 - fix(video): prevent infinite loops and restructure video module (merged)
+% 2025-08-28: open-world-agents/open-world-agents#171 - Implement Batch Decoding Strategies for Video Frame Processing with Performance Optimizations (merged)
+% 2025-08-24: open-world-agents/open-world-agents#166 - refactor: improve hierarchical event encoder with enhanced error handling and performance (merged)
+% 2025-08-24: open-world-agents/open-world-agents#165 - feat: improve episode tokenizer configuration and enhance documentation (merged)
+% 2025-08-20: open-world-agents/open-world-agents#163 - feat: Add comprehensive video transcoding and refactor MCAP backup utilities (merged)
+% 2025-08-19: open-world-agents/open-world-agents#162 - feat: improve episode tokenizer with enhanced decode and token control (merged)
+% 2025-08-19: open-world-agents/open-world-agents#161 - fix: resolve editable install issues in release scripts (merged)
+% 2025-08-18: open-world-agents/open-world-agents#160 - Sync main with development changes (2025-08-18) (merged)
+% 2025-08-16: open-world-agents/open-world-agents#159 - Video I/O System Overhaul, Legacy Cleanup, and API Modernization (merged)
+% 2025-08-16: open-world-agents/open-world-agents#158 - feat: dynamic batching for video decoding server (merged)
+% 2025-08-15: transformers#40206 - chore: fix typo in `find_executable_batch_size` to match new 0.9 ratio (merged)
+% 2025-08-15: open-world-agents/open-world-agents#157 - Add pytest-subtests plugin for better test organization (merged)
+% 2025-08-15: omni-us/jsonargparse#756 - Improve parameter kind handling for argument requirement determination (merged)
+% 2025-08-15: omni-us/jsonargparse#757 - Improving CLI args/option seperation logic to match expected keyword arguments behavior (issue, closed)
+% 2025-08-01: transformers#39842 - Expected behavior of `compute_result` is hard to expect and inconsistent (issue, closed)
+% 2025-07-31: lerobot#1634 - lerobot visualize_dataset huggingface space shows blank white screen (issue, open)
+% 2025-07-22: ruff#19492 - Formatter inserts trailing newline at the end of a file even when inside a `fmt: off` region (issue, open)
+% 2025-07-14: uv#14609 - Inconsistent pyproject.toml handling for `uv pip install` for `git+` and local install (issue, closed)
+% 2025-07-14: transformers#39392 - Enabling `average_tokens_across_devices` by default in Trainer (issue, closed)
+% 2025-06-14: conda-forge/staged-recipes#30330 - added owa-msgs (merged)
+% 2025-06-09: uv#13920 - `uv` can't install post-release packages. (issue, closed)
+% 2025-06-02: transformers#38521 - Error for `return_assistant_tokens_mask` in MLLM processor (issue, closed)
+% 2025-05-30: lerobot#1174 - [Question] Multi-Rate Sensor and Discrete Event Handling in `lerobot` (issue, open)
+% 2025-05-28: conda-forge/staged-recipes#30181 - add owa-gstreamer-bundle (open)
+% 2025-05-27: conda-forge/staged-recipes#30167 - Add ocap and owa (merged)
+% 2025-05-27: conda-forge/staged-recipes#30166 - add owa-cli (merged)
+% 2025-05-27: conda-forge/staged-recipes#30165 - add owa-env-desktop (merged)
+% 2025-05-27: conda-forge/staged-recipes#30164 - add owa-env-gst (merged)
+% 2025-05-27: conda-forge/staged-recipes#30162 - add mcap-owa-support (merged)
+% 2025-05-27: conda-forge/staged-recipes#30161 - added bettercam (merged)
+% 2025-05-27: conda-forge/staged-recipes#30160 - add pygobject-stubs (merged)
+% 2025-05-27: conda-forge/staged-recipes#30159 - added owa-core (merged)
+% 2025-05-27: conda-forge/staged-recipes#30158 - Add mcap (merged)
+% 2025-05-22: conda-forge/staged-recipes#30109 - Add owa - foundation multimodal desktop agent toolbox (merged)
+% 2025-05-20: maze-dataset#65 - Partially observable setting (issue, open)
+% 2025-04-29: transformers#37851 - AttentionMaskVisualizer hard-code sliding_window to 5 in transformers code. (issue, closed)
+% 2025-03-14: transformers#36713 - `return_assistant_tokens_mask` argument is blocked in `ProcessorMixin.apply_chat_template` (issue, closed)
+% 2025-03-09: pynput#634 - MacOS silent failure on Controller(and not failing in Listener) (issue, open)
+% 2025-02-07: uv#11315 - Add `conda` environment support for `--active` flag (issue, open)
+% 2025-02-01: uv#11152 - feature request: `uv install` (issue, closed)
+%
+% === 2024 ===
+% 2024-11-14: pixi-vscode#6 - Python Interpreter change not working in Windows (issue, closed)
+% 2024-08-20: visualnav-transformer#40 - I guess in deployment time obs is not given to model as 4fps (issue, open)
+% 2024-08-08: windows-capture#62 - [FEATURE ⭐] set FPS of video recording (issue, closed)
+% 2024-08-02: trl#1766 - Neftune is applied twice; in trl and transformers BOTH! (issue, closed)
+% 2024-06-24: trl#1766 - Neftune is applied twice; in trl and transformers BOTH! (issue, closed)
+% 2024-06-04: tokenizers#1544 - [BUG] Fast tokenizer does not deal with AddedTokens properly(no problem in Transformers python tokenizer impl.) (issue, closed)
+%
+% === 2023 ===
+% 2023-12-07: micromamba-releases#23 - is it intended that conda-forge is default to 'Y' in print and 'no' in install scipt? (issue, closed)
+% 2023-10-29: open_clip#722 - Tips for those who want to get the last_hidden_state (issue, closed)
+% 2023-10-26: pytorch#112173 - Weird memory leakage in /= division operator (issue, closed)
+% 2023-07-03: FastMRI_challenge#176 - train에 full-sampled k-space data가 들어있는 것이 맞을까요? (issue, open)
+% 2023-06-30: FastMRI_challenge#174 - 다른 modality의 pretrained model / dataset 사용이 가능한가요? (issue, open)
+% 2023-05-12: EasyOCR#1016 - Very strange behavior of two-number ocr (issue, open)
+%
+% === 2022 ===
+% 2022-12-19: mmdetection#9476 - Fix deadlock in distributed training (merged)
+% 2022-12-19: mmsegmentation#2398 - Fix deadlock in distributed training (merged)
+% 2022-11-15: mmdetection3d#1050 - Implement label visualization (merged)
+% 2022-09-05: btd6-ahk#55 - [Sharing] I ported main ahk script(including imagesearch) to python script! (issue, closed)
+% 2022-08-13: mmpretrain#968 - Is it normal to not applying softmax before F.cross_entropy? (issue, closed)
+% 2022-08-04: FastMRI_challenge#135 - 리더보드 갱신주기 (issue, open)
+% 2022-08-03: wandb#4047 - [CLI]: can't catch exception on torch.multiprocessing.spawn after wandb.init (issue, closed)
+%
+% MaumAI-Company (proprietary): 50+ merged PRs (statistics only, no details)
+% ========================================
+
+\begin{twocolentry}{
+
+    }
+    \textbf{Open Source Contributions}
+\end{twocolentry}
+
+\vspace{0.10 cm}
+\begin{onecolentry}
+    \begin{highlights}
+        % TODO: strengthen OWA contents! Since I have relatively strong track records on papers, I need also need to prove my engineering skills
+        \item \textbf{\href{https://github.com/open-world-agents}{Open World Agents}:} Core contributor and maintainer with 150+ merged PRs. Built comprehensive multimodal desktop agent framework including optimized data collection tool, standardized efficient data format, multimedia data processing pipelines, dataset management, agent training and also Python packaging, CI/CD infrastructure.
+        \item \textbf{\href{https://github.com/linkedin/Liger-Kernel/pull/878}{LinkedIn Liger-Kernel} (5.8k stars):} Implemented InternVL3 support for memory-efficient kernel optimization. Added multimodal model support enabling efficient training with reduced memory footprint.
+        \item \textbf{HuggingFace (235k+ total stars):} 5 merged PRs and 15+ issues across core ML libraries. Enhanced ImageProcessor API consistency for multimodal models, improved PeftModel integration with proper warning systems, enabled batch generation in community SDXL pipelines, and identified critical bugs in multi-device training and tokenizer handling.
+        \item \textbf{Open-mmlab:} Fixed critical deadlock issues in mmdetection (31.8k stars) and mmsegmentation (9.3k stars) for distributed multi-GPU environments. Implemented label visualization in mmdetection3d (6.1k stars).
+    \end{highlights}
+\end{onecolentry}
+
+\vspace{0.2 cm}
+
+\begin{twocolentry}{
+
+    }
+    \textbf{Technical Blogging}
+\end{twocolentry}
+
+\vspace{0.10 cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Writing tech blog \href{https://milkclouds.work}{milkclouds.work} covering AI/ML research, robotics, industry analysis, and practical engineering insights
+    \end{highlights}
+\end{onecolentry}
+
+\vspace{0.2 cm}
+
+\begin{twocolentry}{
+        \textit{Sept 2022 – Present}
+    }
+    \textbf{Deepest: SNU Deep Learning Society} \href{https://deepest.ai/}{[Website]}
+\end{twocolentry}
+
+\vspace{0.10 cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Participated in research projects: neural ODE study, \href{https://github.com/pylixir-team/pylixir}{RL-based game solving}, parallel computing, causal inference, voice generation
+    \end{highlights}
+\end{onecolentry}
+
+% \vspace{0.2 cm}
+
+% \begin{twocolentry}{
+%         \textit{2024}
+%     }
+%     \textbf{AttentionX} \href{https://attentionx.org/}{[Website]}
+% \end{twocolentry}
+
+% \vspace{0.10 cm}
+% \begin{onecolentry}
+%     \begin{highlights}
+%         \item AI research \& startup group based in Seoul from academia and industry
+%     \end{highlights}
+% \end{onecolentry}
+
+\vspace{0.2 cm}
+
+\begin{twocolentry}{
+        \textit{2021}
+    }
+    \textbf{Software Maestro, Trainee}
+\end{twocolentry}
+
+\vspace{0.10 cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Studied 3D vision and implemented AR game for iPad using AR Foundation of Unity
+        \item Zombie is evading sofa because iPad realized furnitures, and occlusion is also working. \href{https://bit.ly/3Vxw8Ls}{[link]}
+    \end{highlights}
+\end{onecolentry}
+
+\section{Skills}
+
+\begin{onecolentry}
+    \textbf{Programming Languages:} Highly proficient in Python / Experience with: C++, JAVA, HTML/CSS/JS, Golang, Rust, ...
+\end{onecolentry}
+
+\vspace{0.2 cm}
+
+\begin{onecolentry}
+    \textbf{ML/AI:} PyTorch, HuggingFace (Transformers, Diffusers, LeRobot, ...), open-mmlab libraries, ROS
+\end{onecolentry}
+
+\vspace{0.2 cm}
+
+\begin{onecolentry}
+    \textbf{Infrastructure \& DevOps:} Linux, Slurm, Docker, Ansible, Ceph, GitHub Actions CI/CD, HPC infrastructure
+\end{onecolentry}
+
+\vspace{0.2 cm}
+
+\begin{onecolentry}
+    \textbf{Languages:} Korean (Native), English
+\end{onecolentry}
+
+\end{document}
