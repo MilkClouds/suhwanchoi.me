@@ -520,17 +520,35 @@
 \begin{twocolentry}{
     
     }
+    \textbf{Open Source Projects}
+\end{twocolentry}
+
+\vspace{0.10 cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item \hrefWithoutArrow{https://github.com/open-world-agents}{\textbf{open-world-agents}}: Core contributor and maintainer with 180+ merged PRs. Built comprehensive multimodal desktop agent framework including optimized data collection tool (\hrefWithoutArrow{https://github.com/open-world-agents/ocap}{ocap}), standardized efficient data format (\hrefWithoutArrow{https://open-world-agents.github.io/open-world-agents/data/technical-reference/format-guide/}{OWAMcap}), \hrefWithoutArrow{https://github.com/open-world-agents/owa-dataset-visualizer}{dataset visualizer}, multimedia data management/processing pipelines, agent training and also Python packaging, CI/CD infrastructure.
+        \item \hrefWithoutArrow{https://github.com/open-world-agents/MediaRef}{\textbf{open-world-agents/MediaRef}}: Pydantic media reference for images and video frames (with timestamp support) from data URIs, HTTP URLs, file URIs, and local paths. Features lazy loading and optimized batch video decoding.
+        \item \hrefWithoutArrow{https://github.com/MilkClouds/vla0-trl}{\textbf{MilkClouds/vla0-trl}}: Unofficial reimplementation of VLA-0 using TRL's SFTTrainer.
+        While common VLA codebases are over 10,000 lines, vla0-trl contains only ~1,200 lines total. Gets ~92\% on LIBERO by just fine-tuning Qwen2.5-VL to predict actions as text, without any custom architecture.
+        \item \hrefWithoutArrow{https://github.com/MilkClouds/smon}{\textbf{MilkClouds/smon}}: Real-time Slurm cluster monitoring tool with interactive TUI with Textual. Visualizes GPU/CPU/memory allocation across nodes with job-level drill-down.
+        \item \hrefWithoutArrow{https://github.com/MilkClouds/lazyregistry}{\textbf{MilkClouds/lazyregistry}}: A lightweight Python library for lazy-loading registries with namespace support and type safety
+    \end{highlights}
+\end{onecolentry}
+
+\vspace{0.2 cm}
+
+\begin{twocolentry}{
+    
+    }
     \textbf{Open Source Contributions}
 \end{twocolentry}
 
 \vspace{0.10 cm}
 \begin{onecolentry}
     \begin{highlights}
-        % TODO: strengthen OWA contents! Since I have relatively strong track records on papers, I need also need to prove my engineering skills
-        \item \textbf{\href{https://github.com/open-world-agents}{Open World Agents}:} Core contributor and maintainer with 180+ merged PRs. Built comprehensive multimodal desktop agent framework including optimized data collection tool, standardized efficient data format, multimedia data processing pipelines, dataset management, agent training and also Python packaging, CI/CD infrastructure.
-        \item \textbf{\href{https://github.com/linkedin/Liger-Kernel/pull/878}{LinkedIn Liger-Kernel} (5.8k stars):} Implemented InternVL3 support for memory-efficient kernel optimization. Added multimodal model support enabling efficient training with reduced memory footprint.
-        \item \textbf{HuggingFace (235k+ total stars):} 5 merged PRs and 15+ issues across core ML libraries. Enhanced ImageProcessor API consistency for multimodal models, improved PeftModel integration with proper warning systems, enabled batch generation in community SDXL pipelines, and identified critical bugs in multi-device training and tokenizer handling.
-        \item \textbf{Open-mmlab:} Fixed critical deadlock issues in mmdetection (31.8k stars) and mmsegmentation (9.3k stars) for distributed multi-GPU environments. Implemented label visualization in mmdetection3d (6.1k stars).
+        \item \textbf{linkedin/Liger-Kernel} (\faIcon{star}6k): Added SmolVLM2 (\hrefWithoutArrow{https://github.com/linkedin/Liger-Kernel/pull/919}{\textbf{\#919}}), InternVL3 (\hrefWithoutArrow{https://github.com/linkedin/Liger-Kernel/pull/878}{\textbf{\#878}}) support.
+        \item \textbf{huggingface} (\faIcon{star}155k+): Fixed multimodal processor bugs (\hrefWithoutArrow{https://github.com/huggingface/transformers/pull/41871}{\textbf{transformers\#41871}}, \hrefWithoutArrow{https://github.com/huggingface/transformers/pull/41865}{\textbf{\#41865}}, \hrefWithoutArrow{https://github.com/huggingface/transformers/pull/41864}{\textbf{\#41864}}), added ImageProcessor API (\hrefWithoutArrow{https://github.com/huggingface/transformers/pull/39603}{\textbf{\#39603}}), PeftModel warning (\hrefWithoutArrow{https://github.com/huggingface/transformers/pull/32085}{\textbf{\#32085}}), SDXL batch fix (\hrefWithoutArrow{https://github.com/huggingface/diffusers/pull/5807}{\textbf{diffusers\#5807}}).
+        \item \textbf{open-mmlab} (\faIcon{star}40k+): Fixed distributed training deadlocks (\hrefWithoutArrow{https://github.com/open-mmlab/mmdetection/pull/9476}{\textbf{mmdetection\#9476}}, \hrefWithoutArrow{https://github.com/open-mmlab/mmsegmentation/pull/2398}{\textbf{mmsegmentation\#2398}})
     \end{highlights}
 \end{onecolentry}
 
