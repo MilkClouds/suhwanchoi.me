@@ -1,0 +1,6 @@
+{
+    "editor.formatOnSave": true,
+    "editor.wordWrap": "on",
+    "latex-workshop.docker.enabled": true,
+    "latex-workshop.docker.image.latex": "texlive/texlive:latest-full",
+}
