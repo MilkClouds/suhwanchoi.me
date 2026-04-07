@@ -1,0 +1,7 @@
+# Cached data containing private repo names and GitHub node IDs
+repos.json
+stars.json
+
+# One-time merge artifacts
+chunk*.json
+merge.py
