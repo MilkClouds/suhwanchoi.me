@@ -1,0 +1,12 @@
+version: 2
+
+multi-ecosystem-groups:
+  python:
+    schedule:
+      interval: "daily"
+
+# GitHub Actions
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: "daily"
