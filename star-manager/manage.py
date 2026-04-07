@@ -200,8 +200,9 @@ def cmd_apply(dry_run=False):
     """Sync stars.json -> GitHub star lists.
 
     IMPORTANT: updateUserListsForItem REPLACES all list memberships for a repo.
-    To avoid removing repos from existing unmanaged lists (e.g. "research", "HPC"),
-    we merge our managed list IDs with the repo's existing unmanaged list IDs.
+    To avoid removing repos from lists not managed by this tool, we merge our
+    managed list IDs with the repo's existing unmanaged list IDs.
+    Lists whose names appear in stars.json are "managed"; all others are preserved.
     """
     if not STARS_FILE.exists() or not REPOS_FILE.exists():
         print("Need both stars.json and repos.json. Run 'fetch' first.", file=sys.stderr)
@@ -222,11 +223,12 @@ def cmd_apply(dry_run=False):
     print("\n=== Step 1: Fetch existing lists ===\n")
     existing_lists = _fetch_all_lists_with_repos()
 
+    managed_names = set(cats.keys())
     managed_ids = {}  # managed list name -> id
     unmanaged_ids = {}  # unmanaged list name -> id
 
     for name, info in existing_lists.items():
-        if MANAGED_LIST_SEP in name:
+        if name in managed_names:
             managed_ids[name] = info["id"]
         else:
             unmanaged_ids[name] = info["id"]
@@ -237,7 +239,7 @@ def cmd_apply(dry_run=False):
     # Build repo -> set of unmanaged list IDs (to preserve)
     repo_to_unmanaged = defaultdict(set)
     for name, info in existing_lists.items():
-        if MANAGED_LIST_SEP not in name:
+        if name not in managed_names:
             for repo in info["repos"]:
                 repo_to_unmanaged[repo].add(info["id"])
 
