@@ -142,3 +142,48 @@ td.highlight {
     display: inline-block;
     border-radius: 10px;
 }
+
+.topnav {
+  width: 100%;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  margin-bottom: 8px;
+}
+
+.topnav-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 12px 2.5%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+.topnav-brand {
+  font-weight: 700;
+  color: #333;
+  letter-spacing: 0.2px;
+}
+
+.topnav-brand:hover,
+.topnav-brand:focus {
+  color: #f09228;
+}
+
+.topnav-links a {
+  margin-left: 18px;
+}
+
+@media (max-width: 480px) {
+  .topnav-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .topnav-links a {
+    margin-left: 0;
+    margin-right: 14px;
+  }
+}
