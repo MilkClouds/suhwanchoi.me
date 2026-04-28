@@ -1,0 +1,154 @@
+/* Brand-consistent overrides on top of Quarto's cosmo theme.
+ * Mirrors the site's stylesheet.css color/typography decisions
+ * (Lato + #1772d0/#f09228 link palette). */
+
+/* Lato (loaded inline; mirrors site stylesheet.css) */
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+body {
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+}
+
+a {
+  color: #1772d0;
+  text-decoration: none;
+}
+
+a:focus,
+a:hover {
+  color: #f09228;
+  text-decoration: none;
+}
+
+/* ===== Top nav (shared with main site) ===== */
+
+.topnav {
+  width: 100%;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  margin-bottom: 8px;
+}
+
+.topnav-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 12px 2.5%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+.topnav-brand {
+  font-weight: 700;
+  color: #333;
+  letter-spacing: 0.2px;
+}
+
+.topnav-brand:hover,
+.topnav-brand:focus {
+  color: #f09228;
+}
+
+.topnav-links a {
+  margin-left: 18px;
+}
+
+@media (max-width: 480px) {
+  .topnav-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .topnav-links a {
+    margin-left: 0;
+    margin-right: 14px;
+  }
+}
+
+/* ===== Quarto content polish ===== */
+
+/* Tighten the title block (Quarto's defaults are airy) */
+#title-block-header.quarto-title-block.default {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+#title-block-header h1.title {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.quarto-title-meta {
+  color: #777;
+  font-size: 13px;
+}
+
+/* Tags / categories */
+.quarto-categories .quarto-category {
+  background: #eef3fa;
+  color: #1772d0;
+  border-radius: 3px;
+  padding: 1px 8px;
+  font-size: 12px;
+  margin-right: 6px;
+  border: none;
+}
+
+/* Body width: slightly narrower than the cosmo default for readability */
+main.content {
+  max-width: 760px;
+}
+
+/* Code blocks — match the site's blog.css feel */
+pre.sourceCode,
+div.sourceCode {
+  background: #f4f4f6;
+  border-radius: 5px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+code:not(.sourceCode) {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 13px;
+  background: #f4f4f6;
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: #222;
+}
+
+/* Inline citations are clickable links by default; keep brand color */
+.citation a {
+  color: #1772d0;
+}
+
+/* Listing page (blog index) */
+.quarto-listing-default .listing-item-image {
+  display: none;
+}
+
+.quarto-listing .listing-title a {
+  color: #1772d0;
+  font-weight: 700;
+}
+
+.quarto-listing .listing-title a:hover {
+  color: #f09228;
+}
+
+.listing-date,
+.listing-categories {
+  color: #888;
+  font-size: 12px;
+}
+
+/* Footer */
+.nav-footer {
+  border-top: 1px solid #eee;
+  font-size: 13px;
+  color: #777;
+}
