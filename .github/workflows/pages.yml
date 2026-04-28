@@ -22,10 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Prepare site
-        run: cp cv/suhwan_choi_cv.pdf suhwanchoi.me/suhwan_choi_cv.pdf
-        shell: bash
-
       - uses: actions/configure-pages@v6
 
       - uses: actions/upload-pages-artifact@v4
