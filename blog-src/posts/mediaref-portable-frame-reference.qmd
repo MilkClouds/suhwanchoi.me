@@ -4,6 +4,7 @@ description: "HuggingFace `datasets.Video` stores whole videos as bytes. lerobot
 date: 2026-04-27
 categories: [MediaRef, ML data engineering, HuggingFace, lerobot]
 image: ""
+draft: true
 citation:
   type: post-weblog
   url: https://suhwanchoi.me/blog/posts/mediaref-portable-frame-reference.html
