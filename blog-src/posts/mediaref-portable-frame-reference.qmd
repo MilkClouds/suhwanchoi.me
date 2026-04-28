@@ -1,0 +1,146 @@
+---
+title: "Stop embedding video bytes: a portable frame-level reference primitive"
+description: "HuggingFace `datasets.Video` stores whole videos as bytes. lerobot `VideoFrame` only works inside lerobot's directory layout. Both leave a gap I keep hitting in my own work — and the fix is two fields."
+date: 2026-04-27
+categories: [MediaRef, ML data engineering, HuggingFace, lerobot]
+image: ""
+citation:
+  type: post-weblog
+  url: https://suhwanchoi.me/blog/posts/mediaref-portable-frame-reference.html
+google-scholar: true
+---
+
+## The problem
+
+Most ML datasets I work with mix lightweight per-step labels (actions, joint states, rewards, language tokens) with heavy media (video frames). Storing those side by side is harder than it sounds. Two patterns dominate today, and they make opposite tradeoffs.
+
+**HuggingFace `datasets.Video`** [@hfdatasets2020] embeds the bytes of an entire video file into a parquet column, with an optional path field for lazy resolution. The schema is `struct<bytes: binary, path: string>` — one row, one whole video, decoded into a `torchcodec.VideoDecoder` at access time. Great if your unit of analysis is "this whole clip", terrible if it's "this frame at second 9.96 inside that clip".
+
+**lerobot's `VideoFrame`** [@lerobot2024] goes the other way. Its schema is `struct<path: string, timestamp: float32>` — one row, one frame. Beautiful, except the wider LeRobotDataset format only really works if your data fits a fixed structure: a single global FPS, an episode-based directory layout, shared `.mp4` shards with `from_timestamp`/`to_timestamp` metadata in `meta/episodes/*.parquet`. As of v3.0, `VideoFrame` is no longer even written into the parquet schema — frame paths and timestamps are reconstructed at runtime from `(episode_index, frame_index)` plus path templates. (See [`video_utils.py`](https://github.com/huggingface/lerobot/blob/main/src/lerobot/datasets/video_utils.py#L566) and [`utils.py`](https://github.com/huggingface/lerobot/blob/main/src/lerobot/datasets/utils.py#L588).) The frame-level idea is right; the surrounding assumptions are too rigid for anything outside lerobot.
+
+In between is a real gap. The data I deal with — gameplay agents, screen recordings, mixed image/video timeseries from `.mcap` logs, ROS bags — doesn't have a fixed FPS, doesn't have episode boundaries, doesn't fit a parquet column with embedded bytes. What I want is much smaller than either system.
+
+## The primitive
+
+Two fields. That's the whole schema:
+
+```text
+struct<uri: string, pts_ns: int64>
+```
+
+- `uri`: any [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986) [@rfc3986] absolute URI (`file://`, `http(s)://`, etc.), an [RFC 2397](https://datatracker.ietf.org/doc/html/rfc2397) [@rfc2397] data URI (`data:image/png;base64,…`), or a POSIX path. No proprietary syntax.
+- `pts_ns`: int64 nanoseconds. Optional. If absent, the resource is a still image; if present, it's the presentation timestamp of a single video frame, measured from the start of the stream as the container reports it.
+
+I packaged this into a small Python library called [**MediaRef**](https://github.com/open-world-agents/MediaRef) [@mediaref] with a Pydantic v2 model and a focused decoder. The full grammar and conformance criteria live in [MediaRef Specification 1.0](https://github.com/open-world-agents/MediaRef/blob/main/docs/SPEC.md). The schema is frozen for the life of major version 1; everything else (decoders, caches, file format adapters) is mutable.
+
+## How it compares
+
+|                       | `datasets.Video`                        | lerobot `VideoFrame`                                 | MediaRef                                            |
+| --------------------- | --------------------------------------- | ---------------------------------------------------- | --------------------------------------------------- |
+| Granularity           | One row = one video file                | One row = one frame, inside LeRobotDataset           | One row = one frame, anywhere                       |
+| Storage assumption    | Embedded `bytes` + `path`               | Path templates + per-episode metadata; fixed global fps | None — just `(uri, pts_ns)`                       |
+| Container             | Parquet                                 | LeRobotDataset directory layout                      | Any (Parquet, mcap, rosbag, HDF5, JSON, …)          |
+| Standards basis       | —                                       | —                                                    | RFC 3986 / RFC 2397                                 |
+| Sparse frame decoding | n/a (decoder over whole file)           | Yes (within episode boundaries)                      | Yes, with 4.9× batch optimization (below)           |
+| HuggingFace Hub       | Native                                  | Native (lerobot-style datasets)                      | Native via `mediaref.hf` (`register_feature`)       |
+
+MediaRef does not compete with the other two — it occupies the niche neither covers. If your data lives inside lerobot's layout, use `VideoFrame`. If your row is a whole clip you'll decode end-to-end, use `datasets.Video`. If neither describes your data, this primitive does.
+
+## Basic use
+
+```python
+from mediaref import MediaRef, batch_decode
+
+# Image, video frame, remote URL, embedded bytes — same primitive.
+ref_img    = MediaRef(uri="frame_001.png")
+ref_remote = MediaRef(uri="https://example.com/photo.jpg")
+ref_frame  = MediaRef(uri="episode.mp4", pts_ns=1_500_000_000)   # frame at 1.5s
+
+# Lazy by default — no I/O on construction.
+rgb = ref_frame.to_ndarray()        # (H, W, 3) uint8
+
+# JSON-serializable, container-agnostic.
+ref_frame.model_dump_json()
+# '{"uri":"episode.mp4","pts_ns":1500000000}'
+```
+
+The two fields cover image references, video frame references, remote URLs and embedded bytes through one constructor. If you store the JSON above in a parquet column, an mcap message, an HDF5 dataset, or even a Postgres `jsonb` field, you've stored a portable media reference.
+
+## Sparse frame decoding: 4.9×
+
+The naive way to load N frames from one video is N independent `av.open()` calls. The smart way is to open the container once, sort timestamps, and let the decoder seek monotonically through them. MediaRef's `batch_decode` does that automatically when refs share a URI:
+
+```python
+refs = [MediaRef(uri="episode.mp4", pts_ns=int(t * 1e9)) for t in [0.0, 0.5, 1.0, 1.5, 2.0]]
+frames = batch_decode(refs)            # default: PyAV
+frames = batch_decode(refs, decoder="torchcodec")   # GPU-accelerated
+```
+
+On a real ML dataloader workload (Minecraft gameplay dataset, 64 episodes × 5 minutes each, 640×360 @ 20 Hz, sparse 4096-token sequences), this is **4.9× faster decoding throughput** and **2.2× better I/O efficiency** versus per-frame decoding. The methodology and full benchmark are in Appendix A of the D2E paper [@d2e2026].
+
+## HuggingFace `datasets` integration
+
+`mediaref.hf` registers `MediaRef` as a first-class feature type via `datasets`'s `register_feature` hook — no fork of `datasets` required, no PR needed:
+
+```python
+# pip install 'mediaref[hf]'
+from datasets import Dataset, Features
+from mediaref import MediaRef
+from mediaref.hf import MediaRefFeature
+
+ds = Dataset.from_dict(
+    {"frame": [
+        MediaRef(uri="episode.mp4", pts_ns=0),
+        MediaRef(uri="episode.mp4", pts_ns=33_333_333),
+    ]},
+    features=Features({"frame": MediaRefFeature()}),
+)
+ds[0]["frame"]
+# MediaRef(uri='episode.mp4', pts_ns=0)   ← lazy, decode with .to_ndarray()
+```
+
+Storage is the canonical `struct<uri: string, pts_ns: int64>`. The feature type round-trips through `Features.to_dict()` / `Features.from_dict()` so it survives parquet metadata and Hub uploads.
+
+## lerobot interop without lerobot
+
+If you have data that's *almost* in lerobot's shape but not quite, you probably want to translate between the two representations without taking on lerobot as a runtime dependency. `mediaref.compat.lerobot` is plain Python — no lerobot import needed:
+
+```python
+from mediaref.compat.lerobot import (
+    from_videoframe, to_videoframe, lerobot_episode_to_refs,
+)
+
+# A single VideoFrame dict from a v2-style dataset
+ref = from_videoframe({"path": "videos/clip.mp4", "timestamp": 0.5})
+# MediaRef(uri='videos/clip.mp4', pts_ns=500_000_000)
+
+# A whole episode in a v3.0 LeRobotDataset shared mp4 shard
+refs = lerobot_episode_to_refs(
+    video_path="videos/observation.images.front_left/chunk-000/file-000.mp4",
+    from_timestamp=12.34,                     # meta.episodes[ep_idx][f"videos/{vid_key}/from_timestamp"]
+    frame_timestamps=[0.0, 1/30, 2/30],       # episode-local timestamps from the parquet
+)
+```
+
+The conversion is loss-free in both directions when timestamps fit in float32 seconds, which they do for any sane video duration.
+
+## Where it actually pays off
+
+Three datasets I've shipped are built on this primitive, and they cover three different domains — which is the whole point of a portable primitive:
+
+- [**open-world-agents/D2E-Original**](https://huggingface.co/datasets/open-world-agents/D2E-Original) — 273.4 hours of synchronized video + input events from 29 PC games, stored as `.mcap` + `.mkv` pairs (1.83 TB total). MediaRef points each frame from the mcap into the mkv. The D2E paper [@d2e2026] uses this for vision-action pretraining.
+- [**open-world-agents/D2E-480p**](https://huggingface.co/datasets/open-world-agents/D2E-480p) — the same data downsampled, same primitive, smaller bytes.
+- [**maum-ai/CostNav-Teleop-Dataset**](https://huggingface.co/datasets/maum-ai/CostNav-Teleop-Dataset) — a delivery-robot navigation/teleop dataset I worked on with the [CostNav](https://worv-ai.github.io/costnav/) team. Different domain, same MediaRef references inside the mcap bags.
+
+None of these are LeRobotDataset-shaped. None of them embed bytes per row. They all store strings.
+
+## Tradeoffs and what's intentionally missing
+
+- **Self-contained datasets are not the goal.** A MediaRef-backed dataset is a graph: parquet/mcap pointing at `.mp4` files. If you move the parquet without the videos, it breaks. That's the whole point — heavy media is decoupled. If you need self-containedness, embed the bytes (and use `datasets.Video`).
+- **The primitive is single-frame.** No range queries yet (no "every Nth frame between A and B"). I plan to add a `MediaRange` sibling, but the per-frame primitive is the foundation.
+- **Cloud schemes (`s3://`, `gs://`, `hf://`)** are first-class via fsspec since v0.6.
+
+## References
+
+::: {#refs}
+:::

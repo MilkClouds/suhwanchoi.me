@@ -1,0 +1,13 @@
+---
+title: "Blog"
+subtitle: "Research-adjacent notes on embodied AI, vision-language-action models, and ML data engineering. For more casual Korean-language posts, see [milkclouds.work](https://milkclouds.work)."
+listing:
+  contents: posts
+  type: default
+  sort: "date desc"
+  categories: true
+  fields: [date, title, description, categories]
+  feed: true
+page-layout: full
+toc: false
+---

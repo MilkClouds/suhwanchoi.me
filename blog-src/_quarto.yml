@@ -1,0 +1,51 @@
+project:
+  type: website
+  output-dir: ../suhwanchoi.me/blog
+  resources:
+    - "posts/**/*.png"
+    - "posts/**/*.jpg"
+    - "posts/**/*.svg"
+
+website:
+  title: "Suhwan Choi · Blog"
+  site-url: "https://suhwanchoi.me/blog"
+  description: "Research-adjacent notes on embodied AI, vision-language-action models, and ML data engineering."
+  navbar: false
+  search: false
+  back-to-top-navigation: true
+  open-graph: true
+  twitter-card: true
+  page-footer:
+    background: light
+    left: |
+      &copy; Suhwan Choi
+    right: |
+      <a href="https://github.com/MilkClouds/suhwanchoi.me">Source</a>
+
+bibliography: refs.bib
+csl: ieee.csl
+
+format:
+  html:
+    theme: cosmo
+    css:
+      - styles/custom.css
+    mainfont: "Lato, Verdana, Helvetica, sans-serif"
+    monofont: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace"
+    fontsize: 15px
+    linkcolor: "#1772d0"
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    code-overflow: scroll
+    code-copy: true
+    code-tools: false
+    citations-hover: true
+    footnotes-hover: true
+    smooth-scroll: true
+    anchor-sections: true
+    link-external-newwindow: false
+    include-in-header:
+      - includes/head-extra.html
+    include-before-body:
+      - includes/topnav.html

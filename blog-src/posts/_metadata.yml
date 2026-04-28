@@ -1,0 +1,5 @@
+# Defaults applied to every post in this folder.
+author: "Suhwan Choi"
+date-format: "YYYY-MM-DD"
+toc: true
+freeze: auto
