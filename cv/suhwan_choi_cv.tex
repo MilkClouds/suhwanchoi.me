@@ -238,7 +238,7 @@
 %     \begin{pubentry}{
 %             10th author
 %         }
-%         \textbf{WorldCam: Interactive Autoregressive 3D Gaming Worlds with Camera Pose as a Unifying Geometric Representation} \href{https://cvlab-kaist.github.io/WorldCam/}{[Website]}
+%         \textbf{WorldCam: Interactive Autoregressive 3D Gaming Worlds with Camera Pose as a Unifying Geometric Representation} \href{https://cvlab-kaist.github.io/WorldCam/}{[Website]} \href{https://videoworldmodel-workshop.github.io/}{[Workshop]}
 %
 %         \vspace{0.10 cm}
 %
@@ -246,7 +246,7 @@
 %
 %         \vspace{0.10 cm}
 %
-%         arXiv 2026
+%         CVPR 2026 Workshop (Video World Models)
 %     \end{pubentry}
 % \end{samepage}
 
@@ -424,16 +424,71 @@
 % OPEN SOURCE CONTRIBUTION RECORD
 % ========================================
 %
-% Last updated: 2026-01-10
+% Last updated: 2026-06-08
 %
 % How to update:
 %    - List up issues and PRs in date order. During retrieval use `gh`
 %    - Listing format: (TODO) (Include title, date, status, ... and brief description)
 %    - On summary, describe statistics of contributions
 %    - For proprietary contribution, ONLY list up statistics on summary, and do not include any details.
+%    - EXCEPTION: self-authored flagship projects (e.g., vla-eval = allenai/vla-evaluation-harness +
+%      worv-ai/vla-evaluation-harness-public) are summarized as statistics only, NOT itemized -- same policy as proprietary.
 %
 % ========================================
 % DETAILED CONTRIBUTION LIST (Recent to Old):
+%
+% === 2026 (Jan - Jun) ===
+% [EXCEPTION] Self-authored / own projects -- summarized as statistics only (NOT itemized), same policy as proprietary.
+%   2026 (Jan-Jun), self-authored:
+%     - vla-eval (allenai/vla-evaluation-harness + worv-ai/vla-evaluation-harness-public): 71 PRs (53 merged)
+%     - open-world-agents/MediaRef: 15 PRs (13 merged)
+%     - open-world-agents/open-world-agents: 7 PRs (6 merged)
+%   Itemized below = external/community contributions only.
+% 2026-06-04: UT-Austin-RPL/mimicdroid-robocasa#8 - Pin mink==0.0.10 and add missing IK/data deps so GR1 + abstract replay work from a clean install (open)
+% 2026-05-31: subinium/agf#49 - fix(shell): default to PowerShell on native Windows without the wrapper (open)
+% 2026-05-28: MilkClouds/charliecloud-feedstock#1 - Rewrite recipe for v0.44 (current upstream); migrate source to GitLab (closed)
+% 2026-05-28: conda-forge/charliecloud-feedstock#24 - Rewrite recipe for v0.44 (current upstream); migrate source to GitLab (open)
+% 2026-05-22: open-world-agents/gstreamer-bundle-feedstock#15 - wasapi2src process loopback (loopback-target-pid) produces no buffers (regression in 1.28.3) (issue, open)
+% 2026-05-22: open-world-agents/gstreamer-bundle-feedstock#14 - Fix CI: run conda-build in the base environment (merged)
+% 2026-05-16: open-world-agents/gstreamer-bundle-feedstock#13 - 🚀 Update GStreamer to version 1.28.3 (merged)
+% 2026-05-14: quarto-dev/quarto-cli#14513 - Add `recursive` option to anchor listing `contents` globs to the listing directory (closed)
+% 2026-05-14: quarto-dev/quarto-cli#14512 - Listing `contents` glob silently matches files in sibling subdirectories (smart-glob `**/` prefix leaks across the project) (issue, open)
+% 2026-05-14: hletrd/JudgeKit#36 - Quality essentials — audit fix + server logger + compiler/execute split (closed)
+% 2026-05-13: hletrd/JudgeKit#35 - Quality essentials — audit fix + server logger + compiler/execute split (closed)
+% 2026-05-09: huggingface/transformers#45864 - PretrainedConfig.from_pretrained: silent default on missing config.json (issue, closed)
+% 2026-04-24: subinium/agf#22 - Add PowerShell / Windows support (merged)
+% 2026-04-14: open-world-agents/gstreamer-bundle-feedstock#11 - 🚀 Update GStreamer to version 1.28.2 (closed)
+% 2026-04-13: upstash/context7#2452 - Refresh request for /tacc/lmod (issue, closed)
+% 2026-04-09: NVIDIA/Isaac-GR00T#619 - Help reproducing SimplerEnv scores with N1.6 checkpoints (likely config mismatch) (issue, open)
+% 2026-03-31: pygobject/pygobject-stubs#273 - Install fail(try to build pygobject) only on 2.17.0 (issue, closed)
+% 2026-03-31: dexmal/dexbotic#74 - vla-evaluation-harness — cross-benchmark evaluation framework (DB-CogACT reproduced across 3 benchmarks) (issue, open)
+% 2026-03-31: DelinQu/SimplerEnv-OpenVLA#37 - Cross-benchmark VLA evaluation with dependency isolation — vla-evaluation-harness (issue, open)
+% 2026-03-27: open-world-agents/gstreamer-bundle-feedstock#10 - 🚀 Update GStreamer to version 1.28.1 (merged)
+% 2026-03-23: LimHyungTae/awesome-claudecode-paper-proofreading#3 - Proposal for adding bib verification (issue, closed)
+% 2026-03-20: MilkClouds/suhwanchoi.me#1 - Update cv (merged)
+% 2026-03-20: huggingface/lerobot#3187 - Proposal: vla-eval integration — 11+ sim benchmarks for lerobot policies (issue, open)
+% 2026-03-17: upstash/context7#2258 - Refresh request for /astral-sh/ruff (issue, closed)
+% 2026-03-17: MilkClouds/snu_downloader#5 - Migrate from Selenium scraping to Canvas REST API with hybrid video support (merged)
+% 2026-03-09: MilkClouds/make-bib#9 - Add DBLP local database with LFS and fix NeurIPS sync (merged)
+% 2026-02-23: yueen-ma/Awesome-VLA#3 - Add Awesome VLA Study to Related Repositories (merged)
+% 2026-02-23: keon/awesome-physical-ai#2 - Add Awesome VLA Study to Related Works (merged)
+% 2026-02-23: jslee02/awesome-robotics-libraries#87 - [Suggestion] Awesome VLA Study (issue, closed)
+% 2026-02-23: jonyzhang2023/awesome-embodied-vla-va-vln#33 - Add Awesome VLA Study to Related Works (merged)
+% 2026-02-23: HCPLab-SYSU/Embodied_AI_Paper_List#34 - Add Awesome VLA Study to Resources (merged)
+% 2026-02-22: MilkClouds/lazyregistry#12 - Add python 3.8 support (merged)
+% 2026-02-22: dexmal/dexbotic#62 - Replace build backend with hatchling (open)
+% 2026-02-16: MilkClouds/lazyregistry#11 - refactor: replace pydantic ValidationError with custom ImportFailedError (merged)
+% 2026-02-16: hustvl/InfiniteVL#6 - How much benefit is from cuda graph? (issue, open)
+% 2026-02-06: Orchestra-Research/AI-Research-SKILLs#18 - Open-source adoptation proposal for bibtex verify: `bibtools` (issue, open)
+% 2026-02-05: meta-pytorch/torchcodec#1223 - torchcodec decode extremely slow at large mkv file(42x slower than mp4) (issue, closed)
+% 2026-01-31: open-world-agents/gstreamer-bundle-feedstock#9 - 🚀 Update GStreamer to version 1.28.0 (merged)
+% 2026-01-29: MilkClouds/make-bib#8 - new interface (merged)
+% 2026-01-28: worv-ai/CostNav#54 - ⚡ Refactor: modularize launch.py into launcher/ and utils/ (merged)
+% 2026-01-20: MilkClouds/make-bib#7 - feat: add FAQ, improve verification comment with version (merged)
+% 2026-01-14: MilkClouds/make-bib#6 - Docs update & release v0.0.0a1 (merged)
+% 2026-01-14: MilkClouds/make-bib#5 - feat: add ICML 2022 and ICML 2025 papers to BibTeX examples (merged)
+% 2026-01-14: MilkClouds/make-bib#4 - feat: add unicode_to_latex utility for converting Unicode characters … (merged)
+% 2026-01-14: MilkClouds/make-bib#3 - refactor: Cleaner source of truth architecture (merged)
 %
 % === 2025 (Oct - Dec) ===
 % 2025-12-29: open-world-agents/open-world-agents#233 - refactor: Move visualizer to external repo and update devcontainer (merged)
@@ -544,7 +599,7 @@
 % 2022-08-04: FastMRI_challenge#135 - 리더보드 갱신주기 (issue, open)
 % 2022-08-03: wandb#4047 - [CLI]: can't catch exception on torch.multiprocessing.spawn after wandb.init (issue, closed)
 %
-% MaumAI-Company (proprietary): 75+ merged PRs (statistics only, no details)
+% Proprietary (worv-ai + MaumAI-Company, private repos): 350+ merged PRs (statistics only, no details)
 % ========================================
 
 \begin{twocolentry}{
@@ -558,7 +613,7 @@
     \begin{highlights}
         \item \hrefWithoutArrow{https://github.com/allenai/vla-evaluation-harness}{\textbf{allenai/vla-evaluation-harness}}: Primary author. Unified evaluation framework for VLA models across robot simulation benchmarks with 47x throughput via batch parallel evaluation, Docker-isolated benchmarks, and the largest unified VLA \hrefWithoutArrow{https://allenai.github.io/vla-evaluation-harness/leaderboard/}{leaderboard} (500+ models $\times$ 17 benchmarks).
         \item \hrefWithoutArrow{https://github.com/MilkClouds/awesome-vla-study}{\textbf{MilkClouds/awesome-vla-study}}: Curated reading list on VLA models -- from diffusion/flow matching foundations through robot foundation model architectures to data scaling, RL fine-tuning, and world models.
-        \item \hrefWithoutArrow{https://github.com/open-world-agents}{\textbf{open-world-agents}}: Core contributor and maintainer with 180+ merged PRs. Built comprehensive multimodal desktop agent framework including optimized data collection tool (\hrefWithoutArrow{https://github.com/open-world-agents/ocap}{ocap}), standardized efficient data format (\hrefWithoutArrow{https://open-world-agents.github.io/open-world-agents/data/technical-reference/format-guide/}{OWAMcap}), \hrefWithoutArrow{https://github.com/open-world-agents/owa-dataset-visualizer}{dataset visualizer}, multimedia data management/processing pipelines, agent training and also Python packaging, CI/CD infrastructure.
+        \item \hrefWithoutArrow{https://github.com/open-world-agents}{\textbf{open-world-agents}}: Core contributor and maintainer with 220+ merged PRs. Built comprehensive multimodal desktop agent framework including optimized data collection tool (\hrefWithoutArrow{https://github.com/open-world-agents/ocap}{ocap}), standardized efficient data format (\hrefWithoutArrow{https://open-world-agents.github.io/open-world-agents/data/technical-reference/format-guide/}{OWAMcap}), \hrefWithoutArrow{https://github.com/open-world-agents/owa-dataset-visualizer}{dataset visualizer}, multimedia data management/processing pipelines, agent training and also Python packaging, CI/CD infrastructure.
         \item \hrefWithoutArrow{https://github.com/open-world-agents/MediaRef}{\textbf{open-world-agents/MediaRef}}: Pydantic media reference for images and video frames with lazy loading and optimized batch video decoding.
         \item \hrefWithoutArrow{https://github.com/MilkClouds/vla0-trl}{\textbf{MilkClouds/vla0-trl}}: Unofficial reimplementation of VLA-0 using TRL's SFTTrainer.
         While common VLA codebases are over 10,000 lines, vla0-trl contains only ~1,200 lines total. Gets ~92\% on LIBERO by just fine-tuning Qwen2.5-VL to predict actions as text, without any custom architecture.
