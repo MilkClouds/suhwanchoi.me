@@ -22,6 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Build CV PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: cv
+          root_file: suhwan_choi_cv.tex
+
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 

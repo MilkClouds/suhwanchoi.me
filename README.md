@@ -6,15 +6,17 @@ Personal website, blog, and CV repository. Originally based on [jonbarron.github
 
 - `suhwanchoi.me/` — homepage and static assets, deployed to [suhwanchoi.me](https://suhwanchoi.me) via GitHub Actions. The `suhwanchoi.me/blog/` subtree is built from `blog-src/` by Quarto and is **not tracked** in git (see `.gitignore`).
 - `blog-src/` — Quarto source for the blog. Posts live in `blog-src/posts/*.qmd`. Renders into `suhwanchoi.me/blog/`.
-- `cv/` — CV LaTeX source. The built `cv/suhwan_choi_cv.pdf` is reachable from the site at `/suhwan_choi_cv.pdf` via a tracked symlink in `suhwanchoi.me/`.
+- `cv/` — CV LaTeX source. `cv/suhwan_choi_cv.pdf` is **built by CI** on deploy (not tracked in git, see `.gitignore`) and reachable from the site at `/suhwan_choi_cv.pdf` via a symlink in `suhwanchoi.me/` (dereferenced at package time).
 - `milkclouds/` — [GitHub profile](https://github.com/MilkClouds/milkclouds) (git submodule).
 
 ## How to build CV
 
-1. Install LaTeX Workshop extension for VSCode
-2. Open `cv/suhwan_choi_cv.tex` in VSCode
-3. Press `Option+Command+B` to build
-4. Built PDF is at `cv/suhwan_choi_cv.pdf`
+`cv/suhwan_choi_cv.pdf` is built automatically by CI on every deploy (see [Deployment](#deployment)) — just edit `cv/suhwan_choi_cv.tex`, commit, and push. The PDF is **not tracked** in git.
+
+To preview locally (optional):
+
+- VSCode: install the LaTeX Workshop extension, open `cv/suhwan_choi_cv.tex`, press `Option+Command+B`. Output at `cv/suhwan_choi_cv.pdf`.
+- CLI: `latexmk -pdf -interaction=nonstopmode cv/suhwan_choi_cv.tex`
 
 ## How to serve website locally
 
@@ -56,7 +58,8 @@ quarto preview blog-src
 
 Pushing to `main` triggers `.github/workflows/pages.yml`:
 
-1. `quarto-dev/quarto-actions/setup@v2` installs Quarto.
-2. `quarto render blog-src` rebuilds the blog into `suhwanchoi.me/blog/`.
-3. `actions/upload-pages-artifact@v4` packages `suhwanchoi.me/` (with symlinks dereferenced — that's how the CV at `/suhwan_choi_cv.pdf` resolves to `cv/suhwan_choi_cv.pdf`).
-4. `actions/deploy-pages@v5` publishes.
+1. `xu-cheng/latex-action@v3` builds `cv/suhwan_choi_cv.pdf` from the LaTeX source (pdflatex via latexmk).
+2. `quarto-dev/quarto-actions/setup@v2` installs Quarto.
+3. `quarto render blog-src` rebuilds the blog into `suhwanchoi.me/blog/`.
+4. `actions/upload-pages-artifact@v4` packages `suhwanchoi.me/` (with symlinks dereferenced — that's how the CV at `/suhwan_choi_cv.pdf` resolves to the freshly built `cv/suhwan_choi_cv.pdf`).
+5. `actions/deploy-pages@v5` publishes.
