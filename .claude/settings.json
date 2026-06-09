@@ -1,13 +1,20 @@
 {
+  "enabledPlugins": {
+    "frontend-slides@frontend-slides": true,
+    "editable-pptx@my-dev-playbook": true
+  },
   "extraKnownMarketplaces": {
     "frontend-slides": {
       "source": {
         "source": "github",
         "repo": "zarazhangrui/frontend-slides"
       }
+    },
+    "my-dev-playbook": {
+      "source": {
+        "source": "github",
+        "repo": "MilkClouds/my-dev-playbook"
+      }
     }
-  },
-  "enabledPlugins": {
-    "frontend-slides@frontend-slides": true
   }
 }
