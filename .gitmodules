@@ -1,3 +1,6 @@
 [submodule "milkclouds"]
 	path = milkclouds
 	url = https://github.com/MilkClouds/milkclouds.git
+[submodule "pitch"]
+	path = pitch
+	url = https://github.com/MilkClouds/pitch.git
