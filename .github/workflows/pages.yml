@@ -3,6 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
 
 permissions:
   contents: read
@@ -10,35 +11,49 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  # Build the deployable site via scripts/build.sh (the same script used for
+  # local preview) and upload it as the Pages artifact. Runs on every push and
+  # PR, so PRs exercise the real build.
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v6
 
-      - name: Build CV PDF
-        uses: xu-cheng/latex-action@v3
-        with:
-          working_directory: cv
-          root_file: suhwan_choi_cv.tex
+      - name: Install TeX Live
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            latexmk \
+            texlive-latex-recommended \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-fonts-extra \
+            lmodern
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
-      - name: Render blog
-        run: quarto render blog-src
+      - name: Build site
+        run: bash scripts/build.sh
 
       - uses: actions/configure-pages@v6
 
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: suhwanchoi.me
+          path: _site
 
+  # Publish the artifact. Only on pushes to main; PRs build but never deploy.
+  deploy:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v5
