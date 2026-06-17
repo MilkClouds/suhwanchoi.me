@@ -26,34 +26,21 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      # Cache the downloaded .debs (apt's archive dir, redirected to a
-      # user-owned path so actions/cache needs no root). Re-runs skip the large
-      # texlive-fonts-extra download. Bump -v1 if the package list below changes.
-      - name: Cache TeX Live packages
-        uses: actions/cache@v4
-        with:
-          path: ~/tl-debs
-          key: tl-debs-${{ runner.os }}-v1
-
+      # Plain apt install. Caching the downloaded .debs was tried and removed:
+      # it saved only ~6s net (the ~95s cost is dpkg unpack/configure, which a
+      # .deb cache can't avoid) for a 698MB cache entry. Retry + per-connection
+      # timeout so a stalled mirror fails fast and retries instead of hanging.
       - name: Install TeX Live
         run: |
-          mkdir -p ~/tl-debs
-          # Retry + per-connection timeout so a stalled mirror fails fast and
-          # retries instead of hanging the job.
           opts="-o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30"
           sudo apt-get $opts update
           sudo DEBIAN_FRONTEND=noninteractive apt-get $opts install -y --no-install-recommends \
-            -o Dir::Cache::archives="$HOME/tl-debs" \
             latexmk \
             texlive-latex-recommended \
             texlive-latex-extra \
             texlive-fonts-recommended \
             texlive-fonts-extra \
             lmodern
-          # apt runs as root and leaves root-owned lock/partial in the archive
-          # dir; hand it back so actions/cache (runs as the runner user) can read
-          # and save it.
-          sudo chown -R "$(id -u):$(id -g)" ~/tl-debs
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
