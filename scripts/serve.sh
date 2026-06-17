@@ -14,7 +14,7 @@ bash scripts/build.sh
 # Store stub that isn't real Python), preferring python3 on Unix.
 py=""
 for c in python3 python; do
-  if command -v "$c" >/dev/null 2>&1 && "$c" -c "import sys" >/dev/null 2>&1; then
+  if command -v "$c" >/dev/null 2>&1 && "$c" -c "import http.server" >/dev/null 2>&1; then
     py="$c"; break
   fi
 done

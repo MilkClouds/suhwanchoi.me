@@ -12,7 +12,9 @@ permissions:
 
 concurrency:
   group: pages-${{ github.ref }}
-  cancel-in-progress: true
+  # Don't cancel an in-progress run -- let production deploys finish (GitHub's
+  # recommended setting for Pages).
+  cancel-in-progress: false
 
 jobs:
   # Build the deployable site via scripts/build.sh (the same script used for

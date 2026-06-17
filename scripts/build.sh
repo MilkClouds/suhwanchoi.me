@@ -12,11 +12,12 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 root="$(pwd)"
 out="$root/_site"
 
-# 1. CV PDF.
-latexmk -pdf -interaction=nonstopmode -halt-on-error -cd "$root/cv/suhwan_choi_cv.tex" >/dev/null
+# 1. CV PDF. (No output redirect: TeX writes compile errors to stdout, so
+#    swallowing it would hide why a failed build failed.)
+latexmk -pdf -interaction=nonstopmode -halt-on-error -cd "$root/cv/suhwan_choi_cv.tex"
 
 # 2. Blog (renders into suhwanchoi.me/blog/ per blog-src/_quarto.yml).
-quarto render "$root/blog-src" >/dev/null
+quarto render "$root/blog-src"
 
 # 3. Assemble _site/ with the CV symlink replaced by the real PDF. (The symlink
 #    is dereferenced by tar on CI too; doing it explicitly also works on Windows,
