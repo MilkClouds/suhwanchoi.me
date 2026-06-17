@@ -50,6 +50,10 @@ jobs:
             texlive-fonts-recommended \
             texlive-fonts-extra \
             lmodern
+          # apt runs as root and leaves root-owned lock/partial in the archive
+          # dir; hand it back so actions/cache (runs as the runner user) can read
+          # and save it.
+          sudo chown -R "$(id -u):$(id -g)" ~/tl-debs
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
