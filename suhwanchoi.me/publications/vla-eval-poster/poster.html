@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>vla-eval — ICRA 2026 Workshop Poster</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+/* ============ A0 portrait — 841 x 1189 mm ============ */
+@page { size: 841mm 1189mm; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --paper:   #f2efe6;
+  --card:    #ffffff;
+  --ink:     #171c1b;
+  --soft:    #545b58;
+  --teal:    #0c5c54;
+  --teal-br: #14918a;
+  --glow:    #38c9b6;
+  --coral:   #e04d77;
+  --dark:    #122019;
+  --hair:    #e7e3d8;
+  --hair2:   #d6d1c3;
+  --wash:    #e7f0ed;
+  --washln:  #bfdcd6;
+}
+
+html, body { margin: 0; padding: 0; }
+
+.poster {
+  width: 841mm; height: 1189mm;
+  background: var(--paper);
+  font-family: "IBM Plex Sans", sans-serif;
+  color: var(--ink);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+
+.mono { font-family: "IBM Plex Mono", monospace; }
+b, strong { font-weight: 600; color: var(--teal); }
+
+/* ====================== HERO ====================== */
+.hero {
+  background:
+    radial-gradient(ellipse 46% 76% at 84% 26%, rgba(56,201,182,.20), transparent 60%),
+    radial-gradient(ellipse 40% 60% at 8% 96%, rgba(224,77,119,.13), transparent 60%),
+    var(--dark);
+  color: #eef0ea;
+  padding: 20mm 30mm 8mm;
+  position: relative;
+}
+.hero::before {
+  content: ""; position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.07) 1.2px, transparent 1.4px);
+  background-size: 13mm 13mm;
+  -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent);
+          mask-image: linear-gradient(180deg, #000 70%, transparent);
+}
+.hero > * { position: relative; }
+
+.hero-top { display: flex; gap: 14mm; align-items: flex-start; }
+.hero-main { flex: 1; min-width: 0; }
+
+.eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 18pt; font-weight: 500; letter-spacing: 2.4pt;
+  text-transform: uppercase; color: var(--glow);
+  display: flex; align-items: center; gap: 5mm; flex-wrap: wrap;
+}
+.eyebrow .sq { width: 5mm; height: 5mm; background: var(--coral); display: inline-block; }
+.eyebrow .dim { color: #7d8f8a; }
+
+h1 {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700; font-size: 64pt; line-height: 1.04;
+  letter-spacing: -1.4pt; color: #f6f3ea;
+  margin: 8mm 0 0;
+}
+h1 .wm { font-family: "IBM Plex Mono", monospace; font-weight: 600; color: var(--glow); letter-spacing: -2pt; }
+
+.byline { margin-top: 8mm; display: flex; flex-direction: column; gap: 3mm; }
+.authors { font-size: 25pt; font-weight: 500; color: #e2e7e2; line-height: 1.3; }
+.authors sup { color: var(--glow); font-weight: 600; }
+.affils {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 18pt; color: #95a6a1; letter-spacing: .2pt;
+}
+.affils sup { color: var(--coral); }
+
+/* logos top-right */
+.hero-logos { display: flex; flex-direction: column; gap: 4.5mm; align-items: flex-end; }
+.lg {
+  background: #fff; border-radius: 2.6mm;
+  padding: 4mm 7mm;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 1.2mm 4mm rgba(0,0,0,.22);
+  min-width: 62mm;
+}
+.lg img { display: block; }
+.lg-maum img { height: 13mm; width: auto; }
+.lg-ai2  img { height: 14mm; width: auto; }
+.lg-snu  img { height: 18mm; width: auto; }
+.hero-logos .lg { user-select: none; touch-action: none; cursor: grab; transition: box-shadow .15s; }
+.hero-logos .lg:hover { box-shadow: 0 2mm 6mm rgba(0,0,0,.35); }
+.hero-logos .lg.dragging { cursor: grabbing; box-shadow: 0 4mm 12mm rgba(0,0,0,.4); }
+
+/* hero stat band */
+.stats {
+  margin-top: 12mm;
+  border-top: 0.5mm solid rgba(255,255,255,.16);
+  display: grid; grid-template-columns: repeat(4, 1fr);
+}
+.stat { padding: 8mm 6mm 9mm; position: relative; }
+.stat + .stat::before {
+  content: ""; position: absolute; left: 0; top: 7mm; bottom: 7mm;
+  width: 0.5mm; background: rgba(255,255,255,.14);
+}
+.stat .v {
+  font-family: "Space Grotesk", sans-serif; font-weight: 700;
+  font-size: 64pt; line-height: 1; letter-spacing: -1.5pt; color: #f6f3ea;
+}
+.stat.hot .v { color: var(--coral); }
+.stat.acc .v { color: var(--glow); }
+.stat .k {
+  font-family: "IBM Plex Mono", monospace; font-size: 19pt;
+  letter-spacing: 1.2pt; text-transform: uppercase; color: #a4b2ad;
+  margin-top: 5mm;
+}
+
+/* compact QR strip — sits below logos in hero */
+.hero-qrs {
+  display: flex; gap: 4mm; margin-top: 1mm;
+  background: #fff; border-radius: 2.6mm; padding: 4mm 5mm 3.5mm;
+  box-shadow: 0 1.2mm 4mm rgba(0,0,0,.22);
+}
+.hq { display: flex; flex-direction: column; align-items: center; flex: 1; }
+.hq img { width: 26mm; height: 26mm; display: block; }
+.hq .ql {
+  font-family: "IBM Plex Mono", monospace; font-size: 10.5pt; font-weight: 600;
+  color: var(--dark); margin-top: 1.5mm; text-transform: uppercase; letter-spacing: 1pt;
+}
+
+/* ====================== WRAP ====================== */
+.wrap {
+  flex: 1;
+  padding: 11mm 30mm 24mm;
+  background-image: radial-gradient(rgba(12,92,84,.055) 1.1px, transparent 1.3px);
+  background-size: 10mm 10mm;
+  display: flex; flex-direction: column;
+  gap: 10mm;
+}
+
+/* teaser band */
+.teaser {
+  background: var(--card);
+  border: 0.3mm solid var(--hair);
+  border-radius: 4mm;
+  box-shadow: 0 3mm 9mm rgba(18,28,25,.08);
+  padding: 7mm 10mm;
+  display: flex; align-items: center; gap: 11mm;
+}
+.teaser img { max-height: 92mm; max-width: 60%; display: block; }
+.teaser .pitch { flex: 1; border-left: 0.6mm solid var(--hair2); padding-left: 12mm; }
+.teaser .pitch .lead {
+  font-family: "Space Grotesk", sans-serif; font-weight: 500;
+  font-size: 31pt; line-height: 1.26; color: var(--ink);
+}
+.teaser .pitch .lead em { font-style: normal; color: var(--teal); font-weight: 600; }
+.teaser .pitch .sub {
+  font-size: 19.5pt; color: var(--soft); margin-top: 6mm; line-height: 1.45;
+}
+
+/* ====================== GRID ====================== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+  grid-auto-flow: column;
+  gap: 11mm 10mm;
+  align-items: stretch;
+}
+
+.card {
+  background: var(--card);
+  border: 0.3mm solid var(--hair);
+  border-radius: 4mm;
+  box-shadow: 0 2.5mm 8mm rgba(18,28,25,.07);
+  padding: 7mm 7.5mm;
+  position: relative; overflow: hidden;
+}
+.ghost {
+  position: absolute; top: -11mm; right: -3mm;
+  font-family: "Space Grotesk", sans-serif; font-weight: 700;
+  font-size: 168pt; line-height: 1; color: rgba(12,92,84,.05);
+  pointer-events: none;
+}
+
+.sec-label {
+  font-family: "IBM Plex Mono", monospace; font-size: 18pt;
+  font-weight: 500; letter-spacing: 2.2pt; text-transform: uppercase;
+  color: var(--teal-br);
+}
+.sec-label .no { color: var(--coral); margin-right: 1mm; }
+.sec-h {
+  font-family: "Space Grotesk", sans-serif; font-weight: 600;
+  font-size: 33pt; line-height: 1.12; letter-spacing: -.5pt;
+  color: var(--ink); margin: 3mm 0 5mm;
+}
+.rule { height: 0.8mm; background: linear-gradient(90deg, var(--teal) 16%, var(--hair2) 16%, var(--hair2)); margin-bottom: 6mm; }
+
+.bd { font-size: 24pt; line-height: 1.42; position: relative; }
+.bd p { margin-bottom: 5mm; }
+.bd p:last-child { margin-bottom: 0; }
+
+ul.list { list-style: none; margin: 1mm 0 0; }
+ul.list li { position: relative; padding-left: 10mm; margin-bottom: 5mm; }
+ul.list li:last-child { margin-bottom: 0; }
+ul.list li::before {
+  content: ""; position: absolute; left: 0; top: 3.6mm;
+  width: 4mm; height: 4mm; background: var(--teal);
+  transform: rotate(45deg);
+}
+ul.list li.x::before { background: var(--coral); }
+.k { color: var(--ink); font-weight: 600; }
+.k.t { color: var(--teal); }
+
+code {
+  font-family: "IBM Plex Mono", monospace; font-size: 20pt;
+  background: var(--wash); color: var(--teal);
+  padding: .3mm 1.8mm; border-radius: 1mm;
+}
+
+/* inline note callout */
+.note {
+  background: var(--wash);
+  border: 0.3mm solid var(--washln);
+  border-radius: 3mm; padding: 6mm 6.5mm; margin-top: 6mm;
+  display: flex; gap: 6mm; align-items: center;
+}
+.note .nv {
+  font-family: "Space Grotesk", sans-serif; font-weight: 700;
+  font-size: 40pt; color: var(--teal); line-height: 1; white-space: nowrap;
+}
+.note .nt { font-size: 20pt; line-height: 1.34; color: var(--ink); }
+
+/* before / after transform */
+.transform { margin-top: 6mm; }
+.tbox {
+  border-radius: 3mm; padding: 5.5mm 6.5mm;
+  display: flex; gap: 6mm; align-items: center;
+}
+.tbox .tv {
+  font-family: "Space Grotesk", sans-serif; font-weight: 700;
+  font-size: 43pt; line-height: 1; white-space: nowrap;
+}
+.tbox .tt { font-size: 19pt; line-height: 1.32; }
+.tbox.prob { background: #fdeef2; border: 0.4mm solid #efbecd; }
+.tbox.prob .tv { color: var(--coral); }
+.tbox.prob .tt { color: var(--ink); }
+.tbox.sol {
+  background-color: var(--teal);
+  background-image: radial-gradient(ellipse 60% 150% at 90% 50%, rgba(56,201,182,.30), transparent 62%);
+}
+.tbox.sol .tv { color: #fff; }
+.tbox.sol .tt { color: #d6e8e4; }
+.tbox.sol .tt b { color: #fff; }
+
+.tarrow {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8mm; margin: 5.5mm 0;
+}
+.tstem { display: flex; flex-direction: column; align-items: center; }
+.tstem .shaft { width: 4.6mm; height: 13mm; background: var(--dark); }
+.tstem .head {
+  width: 0; height: 0;
+  border-left: 8.5mm solid transparent;
+  border-right: 8.5mm solid transparent;
+  border-top: 11mm solid var(--dark);
+}
+.tarrow .tlabel {
+  font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 20pt;
+  color: var(--glow); background: var(--dark);
+  padding: 3mm 6mm; border-radius: 2mm;
+  white-space: nowrap;
+}
+
+/* code block */
+pre.code {
+  background: var(--dark); color: #d5ded9;
+  border-radius: 3mm; padding: 7mm 7mm 6.5mm; margin-top: 6mm;
+  font-family: "IBM Plex Mono", monospace; font-size: 18.5pt; line-height: 1.6;
+  white-space: pre-wrap; position: relative;
+}
+pre.code .cm { color: #6f8f88; }
+pre.code .k1 { color: var(--coral); }
+pre.code .st { color: var(--glow); }
+pre.code .fn { color: #e8c98a; }
+.codetag {
+  position: absolute; top: 0; right: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 14.5pt; letter-spacing: 1.2pt; text-transform: uppercase;
+  background: rgba(56,201,182,.16); color: var(--glow);
+  padding: 2mm 4mm; border-bottom-left-radius: 2.6mm;
+}
+
+pre.cmd {
+  background: var(--dark); border-radius: 3mm;
+  padding: 6mm 7mm; margin-top: 6mm;
+  font-family: "IBM Plex Mono", monospace; font-size: 20pt; line-height: 1.65;
+  color: var(--glow);
+}
+pre.cmd .pr { color: var(--coral); }
+pre.cmd .fl { color: #87938f; }
+
+/* chips */
+.chips { display: flex; flex-wrap: wrap; gap: 3mm; margin-top: 1mm; }
+.chip {
+  font-family: "IBM Plex Mono", monospace; font-size: 18pt; font-weight: 500;
+  border: 0.4mm solid var(--washln); color: var(--teal);
+  background: #fff; padding: 2.2mm 3.6mm; border-radius: 1.8mm;
+}
+.chip.f { background: var(--teal); color: #fff; border-color: var(--teal); }
+.subhead {
+  font-family: "IBM Plex Mono", monospace; font-size: 18.5pt; font-weight: 500;
+  letter-spacing: 1pt; text-transform: uppercase; color: var(--soft);
+  margin: 7mm 0 3.5mm;
+}
+
+/* table */
+table { width: 100%; border-collapse: collapse; margin-top: 5mm; }
+thead th {
+  font-family: "IBM Plex Mono", monospace; font-size: 17.5pt; font-weight: 600;
+  letter-spacing: .4pt; text-transform: uppercase;
+  color: var(--teal); background: var(--wash);
+  padding: 4mm 2.5mm; text-align: center;
+}
+thead th:first-child, tbody td:first-child { text-align: left; }
+thead th:first-child { border-top-left-radius: 2mm; }
+thead th:last-child { border-top-right-radius: 2mm; }
+tbody td {
+  padding: 4mm 2.5mm; text-align: center;
+  border-bottom: 0.3mm solid var(--hair);
+  font-family: "IBM Plex Mono", monospace; font-size: 20.5pt;
+}
+tbody td:first-child { font-weight: 600; color: var(--ink); }
+tbody td .d { color: var(--soft); font-size: 15.5pt; }
+.tnote { font-size: 16.5pt; color: var(--soft); margin-top: 3.5mm; line-height: 1.4; }
+
+/* pitfall (now stand-alone card 04b) */
+.pitlist { list-style: none; margin-top: 3mm; }
+.pitlist li {
+  font-size: 21pt; line-height: 1.36; padding-left: 9mm; position: relative;
+  margin-bottom: 5mm;
+}
+.pitlist li:last-child { margin-bottom: 0; }
+.pitlist li::before {
+  content: "→"; position: absolute; left: 0; top: -.5mm;
+  color: var(--coral); font-weight: 700; font-size: 23pt;
+}
+.pitlist .sw { font-family: "Space Grotesk"; font-weight: 700; color: var(--coral); }
+.pitlist .what { color: var(--ink); font-weight: 600; }
+
+figure { margin: 6mm 0 0; }
+figure img { width: 100%; display: block; border: 0.3mm solid var(--hair); border-radius: 2.4mm; }
+figcaption { font-size: 16.5pt; color: var(--soft); margin-top: 3.5mm; line-height: 1.38; }
+
+/* ====================== BIG LEADERBOARD SECTION ====================== */
+.bigboard {
+  background: var(--card);
+  border: 0.3mm solid var(--hair);
+  border-radius: 4mm;
+  box-shadow: 0 3mm 9mm rgba(18,28,25,.08);
+  padding: 8mm 10mm 9mm;
+  position: relative; overflow: hidden;
+}
+.bigboard .ghost { top: -14mm; right: -4mm; font-size: 200pt; }
+.bb-body { display: flex; gap: 13mm; align-items: stretch; margin-top: 2mm; }
+.bb-fig { flex: 1.3; display: flex; flex-direction: column; align-items: center; }
+.bb-fig img { max-height: 175mm; width: auto; max-width: 100%; display: block; border: 0.3mm solid var(--hair); border-radius: 2.4mm; }
+.bb-fig figcaption { font-size: 16pt; color: var(--soft); margin-top: 4mm; line-height: 1.4; }
+.bb-side { flex: 1; display: flex; flex-direction: column; gap: 8mm; min-width: 0; }
+.bb-side .note { margin: 0; }
+.bb-side .note .nv { font-size: 62pt; }
+.bb-side .note .nt { font-size: 21pt; line-height: 1.36; }
+.insight {
+  background: #fff;
+  border: 0.4mm solid var(--washln);
+  border-left: 3mm solid var(--teal);
+  border-radius: 3mm; padding: 7mm 8mm;
+  font-size: 20.5pt; line-height: 1.4; color: var(--ink);
+}
+.insight .ih {
+  font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 25pt;
+  color: var(--teal); margin-bottom: 4mm; line-height: 1.15;
+}
+.insight p { margin-bottom: 4mm; }
+.insight p:last-child { margin-bottom: 0; }
+.insight .em { color: var(--teal); font-weight: 600; }
+
+/* logo edit panel (browser only) */
+#logo-edit {
+  position: fixed; top: 14px; left: 14px; z-index: 9999;
+  background: rgba(18,32,25,.94); color: #eaf3f0;
+  font: 11px/1.4 ui-monospace, Menlo, Consolas, monospace;
+  padding: 11px 13px; border-radius: 7px;
+  max-width: 300px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.35);
+  border: 1px solid rgba(56,201,182,.25);
+}
+#logo-edit .t {
+  font-weight: 700; color: #38c9b6; margin-bottom: 7px;
+  letter-spacing: .6px; text-transform: uppercase; font-size: 10px;
+}
+#logo-edit .r { padding: 2px 0; display: flex; gap: 8px; }
+#logo-edit .r b { color: #fff; min-width: 40px; }
+#logo-edit .r span { color: #97aaa4; }
+#logo-edit .b { margin: 8px 0 6px; display: flex; gap: 6px; }
+#logo-edit button {
+  font: inherit; padding: 4px 9px; cursor: pointer;
+  background: #38c9b6; color: #122019; border: none; border-radius: 3px;
+  font-weight: 600;
+}
+#logo-edit button.sec { background: transparent; color: #97aaa4; border: 1px solid #2c3a35; }
+#logo-edit .hint { font-size: 10px; opacity: .55; margin-top: 2px; }
+@media print { #logo-edit { display: none !important; } .hero-logos .lg { cursor: default !important; } }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- ============== HERO ============== -->
+  <header class="hero">
+    <div class="hero-top">
+      <div class="hero-main">
+        <div class="eyebrow">
+          <span class="sq"></span>
+          ICRA&nbsp;2026 Workshop
+          <span class="dim">/</span> From Data to Decisions
+          <span class="dim">/</span> Poster Session&nbsp;2
+        </div>
+
+        <h1><span class="wm">vla-eval</span> &mdash; A Unified Evaluation<br>Harness for Vision-Language-Action Models</h1>
+
+        <div class="byline">
+          <div class="authors">
+            Suhwan Choi<sup>1</sup>* &nbsp; Yunsung Lee<sup>1</sup> &nbsp; Yubeen Park<sup>1</sup> &nbsp;
+            Chris Dongjoo Kim<sup>2</sup> &nbsp; Ranjay Krishna<sup>2</sup> &nbsp; Dieter Fox<sup>2</sup> &nbsp; Youngjae Yu<sup>3</sup>
+          </div>
+          <div class="affils">
+            <sup>1</sup>&thinsp;MAUM.AI &nbsp;&nbsp; <sup>2</sup>&thinsp;Allen Institute for AI (AI2) &nbsp;&nbsp;
+            <sup>3</sup>&thinsp;Seoul National University &nbsp;&nbsp; <sup>*</sup>&thinsp;primary author
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero-logos">
+        <div class="lg lg-maum" data-name="maum"><img src="assets/maumai.jpg" alt="MAUM.AI"></div>
+        <div class="lg lg-ai2" data-name="ai2"><img src="assets/ai2.svg" alt="Allen Institute for AI"></div>
+        <div class="lg lg-snu" data-name="snu"><img src="assets/snu_logo.png" alt="Seoul National University"></div>
+        <div class="hero-qrs">
+          <div class="hq"><img src="assets/qr-arxiv.svg" alt="arXiv QR"><div class="ql">Paper</div></div>
+          <div class="hq"><img src="assets/qr-github.svg" alt="GitHub QR"><div class="ql">Code</div></div>
+          <div class="hq"><img src="assets/qr-leaderboard.svg" alt="Leaderboard QR"><div class="ql">Board</div></div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="stats">
+      <div class="stat hot"><div class="v">47&times;</div><div class="k">faster evaluation</div></div>
+      <div class="stat acc"><div class="v">O(N+M)</div><div class="k">integration cost</div></div>
+      <div class="stat acc"><div class="v">14&times;6</div><div class="k">benchmark &times; model matrix</div></div>
+      <div class="stat acc"><div class="v">657</div><div class="k">leaderboard results</div></div>
+    </div>
+
+  </header>
+
+  <!-- ============== WRAP ============== -->
+  <div class="wrap">
+
+    <!-- teaser -->
+    <div class="teaser">
+      <img src="assets/teaser-overview.png" alt="vla-eval overview">
+      <div class="pitch">
+        <div class="lead">Integrate <em>once</em>.<br>Evaluate <em>everywhere</em>.</div>
+        <div class="sub">14 benchmarks &amp; 6 model servers integrate a single time &mdash; the full cross-evaluation matrix then runs from two commands.</div>
+      </div>
+    </div>
+
+    <!-- 3-col x 2-row grid: cards fill column-major (col1 [01,02] / col2 [02b,03] / col3 [04,04p]) -->
+    <div class="grid">
+
+      <!-- col1 / row 1 -->
+      <div class="card">
+        <div class="ghost">01</div>
+        <div class="sec-label"><span class="no">01</span> The Problem</div>
+        <h2 class="sec-h">Per-benchmark integration doesn't scale</h2>
+        <div class="rule"></div>
+        <div class="bd">
+          <p>VLA models are evaluated on <b>many simulation benchmarks</b> &mdash; but wiring each one in is heavy, repeated engineering.</p>
+          <ul class="list">
+            <li class="x"><span class="k">Duplicated effort.</span> Every model repo keeps its own eval scripts, drifting apart silently.</li>
+            <li class="x"><span class="k">Dependency conflicts.</span> LIBERO needs Python&nbsp;3.8, ManiSkill2 needs 3.10, CALVIN needs PyBullet &mdash; no shared environment.</li>
+            <li class="x"><span class="k">Underspecified protocols.</span> Seeds, episode counts and preprocessing are omitted from papers.</li>
+          </ul>
+          <div class="transform">
+            <div class="tbox prob">
+              <div class="tv">O(N&times;M)</div>
+              <div class="tt">Na&iuml;ve cost &mdash; re-integrate for <span class="k">every</span> model &times; benchmark pair.</div>
+            </div>
+            <div class="tarrow">
+              <div class="tstem"><div class="shaft"></div><div class="head"></div></div>
+              <div class="tlabel">vla-eval</div>
+            </div>
+            <div class="tbox sol">
+              <div class="tv">O(N+M)</div>
+              <div class="tt">Integrate each <b>once</b> &mdash; the full N&times;M matrix then <b>fills itself</b>.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- col1 / row 2 -->
+      <div class="card">
+        <div class="ghost">02</div>
+        <div class="sec-label"><span class="no">02</span> Framework Design</div>
+        <h2 class="sec-h">Decouple the model from the benchmark</h2>
+        <div class="rule"></div>
+        <div class="bd">
+          <p>Inspired by the decoupled design of <code>lm-evaluation-harness</code> for LLMs, vla-eval splits model inference from benchmark execution over a <b>WebSocket + msgpack</b> protocol &mdash; and isolates each benchmark inside its own <b>Docker</b> container.</p>
+          <ul class="list">
+            <li><span class="k">Models integrate once.</span> One blocking <code>predict()</code> &mdash; ~50 lines.</li>
+            <li><span class="k">Benchmarks integrate once.</span> Four methods inside a pinned Docker image.</li>
+          </ul>
+          <pre class="code"><span class="codetag">model side, in full</span><span class="k1">class</span> OpenVLAServer(PredictModelServer):
+  <span class="k1">def</span> <span class="fn">predict</span>(self, obs, ctx):
+    img = Image.fromarray(
+      <span class="k1">next</span>(<span class="k1">iter</span>(obs[<span class="st">"images"</span>].values())))
+    prompt = <span class="st">f"In: action for {obs['task']}? Out:"</span>
+    inp = self._proc(prompt, img).to(<span class="st">"cuda"</span>)
+    act = self._model.predict_action(**inp)
+    <span class="k1">return</span> {<span class="st">"actions"</span>: act}</pre>
+        </div>
+      </div>
+
+      <!-- col2 / row 1 -->
+      <div class="card">
+        <div class="ghost">02</div>
+        <div class="sec-label"><span class="no">02</span> Framework &mdash; setup</div>
+        <h2 class="sec-h">Two commands, zero dependency hell</h2>
+        <div class="rule"></div>
+        <div class="bd">
+          <ul class="list">
+            <li><span class="k">Dependency isolation.</span> PEP&nbsp;723 metadata + <code>uv run</code>; conflicting versions coexist.</li>
+            <li><span class="k">Declarative.</span> Two YAML configs; Docker images bundle every asset.</li>
+            <li><span class="k">Reproducible.</span> Each run emits structured JSON &mdash; version, config, metrics.</li>
+          </ul>
+          <pre class="cmd"><span class="pr">$</span> vla-eval serve <span class="fl">--config</span> model.yaml
+<span class="pr">$</span> vla-eval run   <span class="fl">--config</span> benchmark.yaml</pre>
+          <div class="subhead">14 benchmarks</div>
+          <div class="chips">
+            <span class="chip">SimplerEnv</span><span class="chip">LIBERO</span><span class="chip">CALVIN</span>
+            <span class="chip">RLBench</span><span class="chip">LIBERO-Pro</span><span class="chip">RoboCerebra</span>
+            <span class="chip">ManiSkill2</span><span class="chip">Kinetix</span><span class="chip">MIKASA</span>
+            <span class="chip">LIBERO-Mem</span><span class="chip">RoboMME</span><span class="chip">VLABench</span>
+            <span class="chip">RoboTwin&nbsp;2.0</span><span class="chip">RoboCasa</span>
+          </div>
+          <div class="subhead">6 model servers</div>
+          <div class="chips">
+            <span class="chip f">OpenVLA</span><span class="chip f">OpenVLA-OFT</span><span class="chip f">CogACT</span>
+            <span class="chip f">&pi;<sub>0</sub>&nbsp;/&nbsp;FAST</span><span class="chip f">GR00T&nbsp;N1</span><span class="chip f">X-VLA</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- col2 / row 2 -->
+      <div class="card">
+        <div class="ghost">03</div>
+        <div class="sec-label"><span class="no">03</span> Parallel Evaluation</div>
+        <h2 class="sec-h">47&times; faster &mdash; and model-agnostic</h2>
+        <div class="rule"></div>
+        <div class="bd">
+          <p>Environment parallelism via <b>episode sharding</b> across K Docker containers; inference parallelism via <b>batched forward passes</b>.</p>
+          <figure>
+            <img src="assets/speedup_comparison.png" alt="Speedup: sequential vs batch-parallel">
+            <figcaption>Wall-clock evaluation time &mdash; sequential vs. batch-parallel.</figcaption>
+          </figure>
+          <div class="note">
+            <div class="nv">14h&rarr;18m</div>
+            <div class="nt">2,000 LIBERO episodes. The bottleneck is environment step rate &mdash; the speedup <span class="k t">transfers to any model</span>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- col3 / row 1 -->
+      <div class="card">
+        <div class="ghost">04</div>
+        <div class="sec-label"><span class="no">04</span> Validation</div>
+        <h2 class="sec-h">Reproduce six published VLA codebases</h2>
+        <div class="rule"></div>
+        <div class="bd">
+          <p>Across <b>6 VLA codebases</b> and <b>3 benchmarks</b>, with fixed seeds and versioned Docker images.</p>
+          <table>
+            <thead>
+              <tr><th>Codebase</th><th>LIBERO&nbsp;%</th><th>CALVIN</th><th>Simpler&nbsp;%</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>OpenVLA</td><td>76.2&nbsp;<span class="d">−0.3</span></td><td>&mdash;</td><td>&mdash;</td></tr>
+              <tr><td>&pi;<sub>0.5</sub></td><td>97.7&nbsp;<span class="d">+0.8</span></td><td>&mdash;</td><td>&mdash;</td></tr>
+              <tr><td>OpenVLA-OFT</td><td>96.7&nbsp;<span class="d">−0.4</span></td><td>&mdash;</td><td>&mdash;</td></tr>
+              <tr><td>GR00T&nbsp;N1.6</td><td>94.9&nbsp;<span class="d">−2.1</span></td><td>&mdash;</td><td>59.7&nbsp;<span class="d">−8.0</span></td></tr>
+              <tr><td>DB-CogACT</td><td>94.7&nbsp;<span class="d">−0.2</span></td><td>4.02&nbsp;<span class="d">−.04</span></td><td>63.5&nbsp;<span class="d">−6.0</span></td></tr>
+              <tr><td>X-VLA</td><td>97.4&nbsp;<span class="d">−0.7</span></td><td>4.30&nbsp;<span class="d">−.13</span></td><td>94.8&nbsp;<span class="d">−1.0</span></td></tr>
+            </tbody>
+          </table>
+          <div class="tnote">Ours, with Δ vs. published. &mdash;&nbsp;=&nbsp;no public checkpoint.</div>
+        </div>
+      </div>
+
+      <!-- col3 / row 2 -->
+      <div class="card">
+        <div class="ghost">04</div>
+        <div class="sec-label"><span class="no">04</span> Validation &mdash; pitfalls</div>
+        <h2 class="sec-h">One hidden parameter &rArr; catastrophic swings</h2>
+        <div class="rule"></div>
+        <div class="bd">
+          <p>Each reproduction unmasked an undocumented setting that, alone, moves success rate by tens of points.</p>
+          <ul class="pitlist">
+            <li><span class="what">X-VLA</span> &mdash; wrong proprioceptive state source on LIBERO: <span class="sw">97.8% → 42%</span> (a 55&nbsp;pp swing).</li>
+            <li><span class="what">OpenVLA-OFT</span> &mdash; quaternion antipodal normalization mismatch: LIBERO-Long <span class="sw">95% → 56%</span>.</li>
+            <li><span class="what">GR00T</span> &mdash; missing end-effector pose field on SimplerEnv: <span class="sw">30&ndash;55% → 0%</span>.</li>
+            <li><span class="what">OpenVLA</span> &mdash; undocumented eval-time center crop (scale&nbsp;0.9): <span class="sw">&minus;3&nbsp;pp</span>.</li>
+          </ul>
+          <p style="margin-top:5mm">vla-eval records the full configuration with every result &mdash; making each run <b>reproducible from one file</b>.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============== BIG LEADERBOARD SECTION ============== -->
+    <section class="bigboard">
+      <div class="ghost">05</div>
+      <div class="sec-label"><span class="no">05</span> VLA Leaderboard</div>
+      <h2 class="sec-h">657 results &mdash; one canonical protocol</h2>
+      <div class="rule"></div>
+
+      <div class="bb-body">
+        <figure class="bb-fig">
+          <img src="assets/leaderboard.png" alt="VLA leaderboard">
+          <figcaption>Public VLA leaderboard with canonical per-benchmark protocols &mdash; filterable by benchmark and by model. Sourced from 1,704 papers that cite at least one tracked benchmark.</figcaption>
+        </figure>
+
+        <div class="bb-side">
+          <div class="note">
+            <div class="nv">657</div>
+            <div class="nt">results across <span class="k t">17 benchmarks</span> &amp; <span class="k t">509+ models</span>, AI-extracted from <span class="k t">1,704 papers</span> with human review of anomalies. Not independently re-run.</div>
+          </div>
+
+          <div class="insight">
+            <div class="ih">Cross-benchmark comparison is rare.</div>
+            <p><b>81%</b> of models are evaluated on a single benchmark; only <b>6%</b> on three or more.</p>
+            <p>vla-eval makes cross-benchmark comparison practical &mdash; letting the community see <span class="em">general capability across diverse environments and embodiments</span>.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+
+</div>
+
+<script>
+/* ---------------- Interactive logo positioning ----------------
+ * Drag any logo tile in the browser to nudge its position.
+ * Offsets persist via localStorage. To bake into the printed PDF,
+ * click "Copy CSS" and paste the snippet into the <style> block.
+ * --------------------------------------------------------------- */
+(function(){
+  const KEY = 'vla-poster-logos-v1';
+  const tiles = document.querySelectorAll('.hero-logos .lg');
+  if (!tiles.length) return;
+  const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+
+  function apply(t, x, y) {
+    t.style.transform = (x || y) ? `translate(${x}px, ${y}px)` : '';
+    t.dataset.tx = x; t.dataset.ty = y;
+  }
+  tiles.forEach(t => {
+    const p = saved[t.dataset.name] || { x: 0, y: 0 };
+    apply(t, p.x, p.y);
+  });
+
+  let drag = null;
+  tiles.forEach(t => {
+    t.addEventListener('mousedown', e => {
+      drag = { tile: t, sx: e.clientX, sy: e.clientY,
+        ox: parseFloat(t.dataset.tx) || 0, oy: parseFloat(t.dataset.ty) || 0 };
+      t.classList.add('dragging');
+      e.preventDefault();
+    });
+  });
+  window.addEventListener('mousemove', e => {
+    if (!drag) return;
+    apply(drag.tile, drag.ox + (e.clientX - drag.sx), drag.oy + (e.clientY - drag.sy));
+    refreshPanel();
+  });
+  window.addEventListener('mouseup', () => {
+    if (!drag) return;
+    drag.tile.classList.remove('dragging');
+    const out = {};
+    tiles.forEach(t => out[t.dataset.name] = {
+      x: parseFloat(t.dataset.tx) || 0, y: parseFloat(t.dataset.ty) || 0
+    });
+    localStorage.setItem(KEY, JSON.stringify(out));
+    drag = null;
+  });
+
+  const panel = document.createElement('div');
+  panel.id = 'logo-edit';
+  document.body.appendChild(panel);
+
+  function refreshPanel() {
+    let h = '<div class="t">Logo editor — drag in browser</div>';
+    tiles.forEach(t => {
+      const x = Math.round(parseFloat(t.dataset.tx) || 0);
+      const y = Math.round(parseFloat(t.dataset.ty) || 0);
+      h += `<div class="r"><b>${t.dataset.name}</b><span>x: ${x}px&nbsp;&nbsp;y: ${y}px</span></div>`;
+    });
+    h += '<div class="b"><button id="le-copy">Copy CSS</button><button id="le-reset" class="sec">Reset</button></div>';
+    h += '<div class="hint">Paste copied CSS into &lt;style&gt; to bake positions into the printed PDF.</div>';
+    panel.innerHTML = h;
+    panel.querySelector('#le-reset').onclick = () => {
+      tiles.forEach(t => apply(t, 0, 0));
+      localStorage.removeItem(KEY);
+      refreshPanel();
+    };
+    panel.querySelector('#le-copy').onclick = async () => {
+      let css = '';
+      tiles.forEach(t => {
+        const x = Math.round(parseFloat(t.dataset.tx) || 0);
+        const y = Math.round(parseFloat(t.dataset.ty) || 0);
+        if (x || y) css += `.hero-logos .lg[data-name="${t.dataset.name}"]{transform:translate(${x}px,${y}px);}\n`;
+      });
+      if (!css) css = '/* no offsets — all defaults */';
+      try { await navigator.clipboard.writeText(css); } catch(e) {}
+      const btn = panel.querySelector('#le-copy');
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 1200);
+    };
+  }
+  refreshPanel();
+})();
+</script>
+</body>
+</html>
