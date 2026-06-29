@@ -3,3 +3,6 @@ author: "Suhwan Choi"
 date-format: "YYYY-MM-DD"
 toc: true
 freeze: auto
+appendix-cite-as: bibtex
+citation:
+  container-title: "Suhwan Choi · Blog"

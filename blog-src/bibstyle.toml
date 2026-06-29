@@ -1,0 +1,17 @@
+[fields]
+conference = ["title", "author", "booktitle", "year"]
+journal = ["title", "author", "journal", "year", "volume", "number"]
+
+[authors]
+max = 6
+
+[venue]
+style = "abbreviated"
+proceedings_prefix = false
+
+[key]
+style = "lastname_year"
+
+[arxiv]
+entry_type = "article"
+journal_format = "arXiv preprint arXiv:{id}"

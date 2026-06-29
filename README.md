@@ -5,7 +5,7 @@ Personal website, blog, and CV repository. Originally based on [jonbarron.github
 ## Structure
 
 - `suhwanchoi.me/` — homepage and static assets, deployed to [suhwanchoi.me](https://suhwanchoi.me) via GitHub Actions. The `suhwanchoi.me/blog/` subtree is built from `blog-src/` by Quarto and is **not tracked** in git (see `.gitignore`).
-- `blog-src/` — Quarto source for the blog. Posts live in `blog-src/posts/*.qmd`. Renders into `suhwanchoi.me/blog/`.
+- `blog-src/` — Quarto source for the blog. Posts live in `blog-src/posts/*.qmd`. Renders into `blog-src/_site/`; `scripts/build.sh` copies that output into `suhwanchoi.me/blog/`.
 - `cv/` — CV LaTeX source. `cv/suhwan_choi_cv.pdf` is **built by `scripts/build.sh`** (not tracked in git, see `.gitignore`) and reachable from the site at `/suhwan_choi_cv.pdf` via a symlink in `suhwanchoi.me/` (replaced by the real PDF when the site is assembled into `_site/`).
 - `scripts/build.sh` — assembles the deployable site into `_site/`; run by both local preview and CI. `scripts/serve.sh` builds and serves it locally.
 - `milkclouds/` — [GitHub profile](https://github.com/MilkClouds/milkclouds) (git submodule).
@@ -47,7 +47,7 @@ quarto preview blog-src
    categories: [tag1, tag2]
    ---
    ```
-2. Write Markdown. Cite from `blog-src/refs.bib` with `[@key]`. Math, footnotes, cross-refs all supported by Pandoc.
+2. Write Markdown. Cite from a bibliography declared in the post front matter, usually a per-post `.bib` next to the `.qmd`, with `[@key]`. Math, footnotes, cross-refs all supported by Pandoc.
 3. `quarto render blog-src` to preview locally.
 4. Commit `blog-src/` (output is gitignored) and push to `main` — CI rebuilds and redeploys.
 

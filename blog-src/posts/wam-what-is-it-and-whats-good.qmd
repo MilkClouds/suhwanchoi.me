@@ -1,0 +1,125 @@
+---
+title: "World Model, 무엇이고 어디에 좋은가?"
+description: "World-Action Model이 2026년의 키워드가 됐다. 그런데 정확히 무엇이고, 정확히 무엇이 좋은가? World modeling의 이점은 Data scaling·Joint training·Pretrained weight 세 갈래로 갈리는데, 단단한 것은 Joint training 하나뿐이고 그조차 pixel 수준 video generation을 정당화하지 않는다. World model을 정책 바깥에 둘 때도 학습 시뮬레이터로는 한계가 크고, 평가자 쪽이 훨씬 정당하다. 그리고 '세상을 잘 예측하는 것'과 '좋은 의사결정자가 되는 것'은 평행한 위계가 아니다."
+date: 2026-06-16
+categories: [robotics, world models, VLA, embodied AI]
+draft: true
+lang: ko
+bibliography: wam-what-is-it-and-whats-good.bib
+citation:
+  id: choi2026worldmodel
+  type: post-weblog
+  url: https://suhwanchoi.me/blog/posts/wam-what-is-it-and-whats-good.html
+google-scholar: true
+---
+
+*English version: [WAM: What Is It, and What’s Actually Good About It?](wam-what-is-it-and-whats-good-en.html)*
+
+## 1. World Modeling과 Decision Modeling
+
+**World modeling**은 다음 상태를 예측하도록 학습하고, **decision modeling**(흔히 policy learning)은 어떤 행동을 취할지 학습한다.
+
+이 둘은 원래부터 깔끔하게 분리되는 개념이 아니다. 행동 생성은 결국 state/action 공간 안에서 일어나고, **action이라는 것 자체가 ego(행위 주체)를 어디에 두느냐에 따라 정의된다.** ego가 없는 세상에서는 모든 것이 그저 state일 뿐이다. 그래서 **world modeling은 decision modeling의 superset**이고, 이 포함 관계가 WAM이라는 아이디어를 매력적으로 만든다.
+
+**World-Action Model(WAM)**은 이 둘을 한 모델 안에서 묶어, 행동뿐 아니라 미래 상태와 행동을 함께 예측한다(WAM 서베이의 정의)[@wang2026wamsurvey]. 문제는, 이 매력이 실은 세 가지 서로 다른 주장으로 갈리는데 마케팅에서는 뭉뚱그려 하나로 팔린다는 점이다.
+
+한 가지 더 구분해 둘 것이 있다. world model을 **어디에 두느냐**다. WAM은 world model을 정책 *안에* 융합한다. 하지만 world model을 정책 *바깥에* 별도 모듈로 두는 길도 있다. 정책을 그 안에서 RL로 학습시키는 시뮬레이터로 쓰거나, 정책의 성능을 채점하는 평가자로 쓰는 것이다. 이 글은 주로 융합형(WAM)을 다루되, 별도 모듈 용법은 5장에서 따로 짚는다.
+
+## 2. World Modeling이 주는 이점은 무엇인가
+
+WAM 쪽에서 내세우는 이점은 세 가지다.
+
+- **(D) Data scaling.** Action label 없이 학습할 수 있다. 인터넷·인간 영상은 action 주석이 없어도 dynamics를 담고 있으니, 로봇 action 데이터의 희소성을 우회할 수 있다는 주장이다.
+- **(J) Joint training.** State prediction loss가 학습에 좋은 signal을 준다. 희소한 action 신호에 비해 미래 예측은 훨씬 풍부한 supervision이므로, 보조 손실로서 representation을 강하게 만든다.
+- **(P) Pretrained weight.** MLLM → VLA 레시피에는 픽셀 수준 비강건성이나 MLLM 능력의 catastrophic forgetting 같은 문제가 있다. 그러니 아예 **video generation model에서 출발하면** 이런 문제를 우회할 수 있다는 주장이다. NVIDIA 블로그[@nvidia2026wam]가 미는 핵심 프레임이 바로 이것이다. "이미 언어→시각변화를 아는 video 백본에서 시작하면, 남은 video→action gap이 language→action grounding보다 작다"는 논리다.
+
+이 세 축은 보통 video pretrain → action tuning 순서로 합성되지만, 증거의 질은 축마다 전혀 다르다. **분리해서 평가해야 한다.**
+
+## 3. 애초에 새로운 게 맞는가? 왜 갑자기 hype인가
+
+새로운 아이디어는 아니다. Joint training이 정책을 강하게 한다는 명제는 Dreamer 계열에서 이미 나왔고, 2025년 UniVLA(BAAI)[@wang2025univla]도 같은 방향이다. Cascaded WAM의 초기 대표인 UniPi는 2023년 논문[@du2023unipi]이고, joint video-action 예측의 초기 대표 GR-1[@wu2024gr1], latent abstraction의 초기 대표 Play-LMP[@lynch2019play]도 모두 오래된 발상이다(visual foresight나 PlaNet[@hafner2019planet]/Dreamer[@hafner2020dreamer] 같은 선행 계보까지 거슬러 올라간다). NVIDIA 블로그 스스로도 "아이디어는 새롭지 않다"고 인정한다[@nvidia2026wam].
+
+그럼 왜 2026년에 갑자기 이렇게 관심이 커졌나. 두 가지 이유가 있다.
+
+1. **Backbone feasibility.** Video 백본이 강해졌다(CNN 시대 → DiT 기반 Wan·Cosmos). 더 중요한 건, 이 강한 백본들이 오픈소스로 풀렸다는 점이다. 예전에는 video generator를 처음부터 pretrain해야 했고 그건 보통 랩 예산으로 감당할 수 없었다. 이제는 공개된 모델을 fine-tune하면 된다. action 쪽도 per-step MLP에서 action-chunk transformer/flow head로 발전했다. 아이디어가 새로운 게 아니라, 도구가 이제야 따라온 것이다.
+2. **Compute incentive.** WAM은 VLA보다 학습 compute가 약 **7.4배** 비싸다(NVIDIA 자체 추정: Wan급 video pretrain proxy ≈ 51 ZFLOP vs 효율적 from-scratch VLA ≈ 6.9 ZFLOP)[@nvidia2026wam]. 학습 compute 7배면 GPU 수요도 7배다. compute를 파는 쪽에서 compute-heavy 패러다임을 반기지 않을 이유가 없다. 가장 큰 목소리를 내는 진영이 어디인지를 감안하면, 그 주장은 그만큼 걸러 들어야 한다.
+
+## 4. 진짜로 좋은 게 맞는가
+
+핵심 질문은 하나다. **"WAM이어야만 풀 수 있는 문제가 무엇인가?"** 세 축을 하나씩 따져보면, 현재까지의 답은 "그런 문제는 아직 없다"에 가깝다.
+
+비판의 범위부터 잡아두자. 이 글이 겨냥하는 건 **추론 루프 안에서 픽셀 영상을 생성하는 generative WAM-as-policy**(DreamZero류)다. 추론 때 생성을 건너뛰는 representation-only·latent WAM(Fast-WAM·V-JEPA류)은 오히려 아래 (J)에서 내 주장을 뒷받침하는 증거로 쓴다. "WAM" 전체를 비판하는 글이 아니다. world model을 정책에 융합하지 않고 별도 모듈로 두는 용법(학습 시뮬레이터·평가자)은 5장에서 따로 다룬다. video로 *추론*이 아니라 *학습 데이터*를 합성하는 오프라인 용도는 별개 도구이므로 여기서 다루지 않는다.
+
+### (J) Joint training: 참이다. 단 pixel은 필요 없다.
+
+세 축 중 **(J)는 확실하게 참이다.** 미래 예측을 보조 손실로 두면 정책 representation이 좋아진다. 가장 깨끗한 apple-to-apple 증거는 Dreamer 4[@hafner2025dreamer4]다. 동일한 VPT Minecraft 데이터에서, 오히려 더 많은 사전학습을 거친 Gemma 3로 초기화한 VLA agent의 iron-pickaxe 성공률은 **11.2%**인데, Dreamer 4는 **29.0%**다. 거의 3배이고, 논문도 "nearly tripling"이라고 표현한다. imagination RL 없이 Dreamer 4의 latent representation 위에 BC만 얹은 중간 모델(16.9%)조차 Gemma 3 VLA를 앞선다.
+
+다만 여기에 중요한 단서가 있다. Dreamer 4는 인터넷 규모 video generation backbone이 아니다. 도메인 데이터로 학습한 latent block-causal transformer이고, 이득의 원천은 latent 수준의 world modeling이다. **(J)의 이득은 pixel-space loss보다 latent 수준에서 나온다.** 같은 방향의 증거가 V-JEPA 2·VLA-JEPA(latent dynamics)[@assran2025vjepa2; @sun2026vlajepa], Fast-WAM(추론 시 영상 생성을 아예 건너뛰고도 LingBot-VA에 근접하는 representation-only)[@yuan2026fastwam], VPP·mimic-video(pixel을 생성하지 않고 video model의 중간 표현에서 action을 decode)[@hu2025vpp; @pai2025mimicvideo]에서도 보인다. DreamZero의 성능도 Chris Paxton의 해석[@paxton2026dreamzero]처럼 "video generation이 강력한 auxiliary loss로 작동한다"로 보는 편이 자연스럽다(어디까지나 가설이지만). 그렇다면 pixel까지 생성해야 할 이유는 약해진다. 결국 distill되어 사라질 보조 신호일 가능성이 높기 때문이다.
+
+### (D) Data scaling: WAM이 푸는 문제가 아니다.
+
+데이터는 여전히 로봇 학습의 핵심 병목이다. 그런데 WAM이 이 병목을 풀어주지는 않는다. 같은 로봇 데이터로 제어를 배워야 하는 점은 그대로인데, 거기에 video 생성 pretraining(학습 compute 약 7.4배)까지 더 얹는 셈이다.
+
+WAM이 내세우는 핵심 데이터 레버인 "비(非)로봇 데이터(웹·인간 영상)를 끌어쓴다"는 점도 WAM만의 것이 아니다. 가장 강한 open-world VLA인 π0.5[@pi05_2025]를 보면, 학습 예시의 **97.6%가 타깃 로봇 데이터가 아니다**(대부분 웹 멀티모달(캡셔닝·VQA·object localization)과 다른 로봇 데이터). 정작 in-domain teleop은 **~400시간**에 불과하다. 이걸 단순 co-training으로 묶어, video를 한 프레임도 생성하지 않고도 처음 보는 가정집에서 10~15분짜리 long-horizon 작업을 해낸다.
+
+scaling 관점에서도 상황은 비슷하다. 로보틱스에서 *제대로 된* scaling law는 거의 없다. 통제된 모델·데이터 패밀리에서 예측형 power-law를 보인 사례는 사실상 **GEN-0**[@gen0_2025]뿐이다. 거기서 *ossification*도 관찰됐는데, 1B 모델은 일찍 굳어서 270k시간 규모의 pretraining을 흡수하지 못하고, 7B+ 규모라야 내재화한다. 로보틱스 scaling이 그동안 잘 보이지 않았던 건 대부분의 실험이 이 임계점 아래에서 진행됐기 때문일 수 있다. 그런데 이 유일한 scaling law조차 WAM이나 video-gen이 아닌 **반응형 정책**(next-action prediction)에서 나온 결과다. 데이터·스케일이 된다는 증거가 이제 막 나오기 시작했지만, 그 경로에 WAM은 없다.
+
+그리고 로봇 데이터 자체의 병목도 빠르게 해소되고 있다. DROID(76K 데모, 13개 기관, 350h 텔레오프)[@khazatsky2024droid], AgibotWorld Beta(100만+ trajectories, 217 태스크)[@agibotworld2025], RoboMIND(다중 embodiment, RSS 2025)[@wu2025robomind], OXE[@oxe2024](1M+ trajectories, 단 대부분이 scripted 생성이라 품질 한계가 있다) 등 대규모 오픈 데이터셋이 2024~2025년에 집중적으로 나왔다. 자본을 크게 투입하면 규모는 더 올라간다. GEN-0[@gen0_2025]은 270K시간, GEN-1[@gen1_2026]은 wearable 인간영상 50만h(로봇 데이터 0, 태스크당 ~1h 적응, 단 자가보고이고 외부 재현 불가)을 사용했다. 이 경로들 어디에도 generative video가 데이터 병목의 해법으로 작동한 사례는 없다.
+
+정리하면 이렇다. "비(非)로봇 데이터를 끌어쓴다"는 것은 이미 co-training의 표준이고, 로봇 데이터 자체도 오픈 데이터셋과 자본 투입으로 빠르게 커지고 있다. generative video가 이 흐름에 기여하는 바는 없다.
+
+### 성능·강건성 주장: 갈라서 봐야 한다.
+
+DreamZero[@ye2026dreamzero]가 DROID-Franka unseen 태스크에서 π0.5를 크게 앞선 것은 사실이다(task progress 49% vs 33%, success rate 22.5% vs 7.5%). 하지만:
+
+- **WAM이어서 그 성능이 나온 건지는 다른 문제다.** clean한 비교가 아니다. DreamZero는 14B급 video backbone(Wan2.1-I2V)이고 π0.5는 3B급이다. 무엇보다 DreamZero는 DROID로만 학습된 모델이라 DROID 평가는 in-distribution이다. NVIDIA 블로그[@nvidia2026wam]도 WAM의 세 이점을 결론이 아니라 가설(정성적 관찰·시뮬레이션·소수 초기 신호에 기반)로 명시하고 있다.
+- **robustness는 WAM이 실제로 이득을 보는 지점이다. 다만 WAM만의 것도 아니고, 공짜도 아니다.** WAM의 강건성을 직접 비교한 연구[@zhang2026wamrobust]에서 video backbone의 spatiotemporal prior 덕에 WAM은 noise·조명·레이아웃 perturbation에 강한 결과를 보였다(Cosmos-Policy **82.2** on LIBERO-Plus, LingBot-VA **74.2** on RoboTwin 2.0-Plus). 다만 같은 연구가 명확히 밝히듯, π0.5 같은 VLA도 다양한 데이터와 dynamic-prediction 목적을 들이면 대등하거나 더 높은 robustness를 낼 수 있다. 그리고 이 robustness의 대가가 **추론 ≥4.8× 지연**이다. 'world model을 붙였다'가 곧 강건을 뜻하지도 않는다. WorldVLA[@cen2025worldvla]나 UniVLA는 같은 LIBERO-Plus[@fei2025liberoplus]에서 카메라 perturbation에 오히려 가장 심하게(0.3, 4.3) 무너진다. video prior를 *어떻게* 넣느냐가 중요하지, 'world model'이라는 딱지 자체가 의미 있는 건 아니다. robustness는 WAM이 비교적 쉽게 얻는 실질적 강점이지만, π0.5가 따라잡을 수 있고 4.8배 지연까지 감수해야 한다면 패러다임 전체를 정당화하기엔 부족하다.
+
+### (P) Pretrained weight
+
+"MLLM → VLA 레시피에 문제가 있으니 video generation model에서 출발하자"는 발상은 설득력이 약하다. 문제가 있으면 그 레시피를 고치는 게 먼저다. 실제로 잘 고쳐지고 있다. Knowledge Insulation[@driess2025ki]은 action head의 gradient를 격리해 MLLM의 사전학습 능력을 보존하고(π0.5 계보), co-training(π 계열 등)은 VLM 데이터와 로봇 데이터를 함께 학습해 catastrophic forgetting을 회피하며, dual-system(OpenHelix[@cui2025openhelix] 등)은 느린 MLLM과 빠른 정책을 분리해 큰 모델의 역량을 제어 루프 밖에서 끌어쓴다. 7장에서 다루겠지만, 특히 dual-system은 현재 VLA의 context 부재라는 근본 병목에 대한 직접적인 해법이기도 하다.
+
+## 5. 정책 *바깥*의 world model: 시뮬레이터와 평가자
+
+world model을 정책 *바깥에* 별도 모듈로 두는 접근도 있다. 학습 시뮬레이터로 쓰거나, 평가자로 쓰거나. 같은 불충실한 world model인데 용법에 따라 대가가 전혀 다르다.
+
+**학습 시뮬레이터.** 실로봇 RL은 표본이 비싸니, 학습된 video world model 안에서 정책을 RL하자는 흐름이 있다. WMPO[@zhu2025wmpo]가 대표적이고 WoVR[@jiang2026wovr]가 후속이다. 근본적인 문제는, 정책이 world model *안에서* 최적화되면 world model의 부정확한 곳을 찾아내 착취한다는 점이다. WMPO는 LIBERO-Long에서 이득이 정확히 0이고(13.7→13.7), WoVR가 세 가지 완화 기법을 쌓아 평균 46.2→69.2로 올리지만, 세 기법 모두 결국 실 rollout을 필요로 한다. 그리고 이 기법들이 싸우는 문제(오차 누적, 가짜 성공, 분포 이동)는 진짜 시뮬레이터에는 애초에 없는 문제다. **충실한 sim이 있으면 그걸 쓰면 된다.** 학습 시뮬레이터로서의 world model은 충실한 sim이 없는 실세계에서만 살아남는다.
+
+**평가자.** PI·NVIDIA의 SC3-Eval[@tseng2026sc3eval]은 world model을 학습이 아니라 *평가*에 쓴다. 정책 체크포인트를 world model 안에서 rollout해 성공률을 추정하고, 비싼 실세계 평가의 proxy로 삼는다. 평가에서는 채점 대상 정책이 고정된 체크포인트라 world model에 적응하지 않고, 필요한 것은 순위 상관이지 최적화-grade gradient가 아니다. 학습에서 치명적이었던 환각 착취가 구조적으로 발생하지 않는다. 7개 VLA 체크포인트에서 closed-loop Pearson 0.929로, 기존 평가자들을 앞선다. 한계도 있다. OOD에서 충실도가 떨어지고, task 특화 학습이 필요하며, 어디까지나 triage proxy다.
+
+PI의 실제 행보가 이 구분을 따른다. 정책 *개선*은 실로봇 RL(RLT[@pi_rlt] 등)로 하고, video world model은 *평가자*로만 쓴다. 학습된 world model은 6장의 예측 위계에서 3순위다. 정책이 오차를 착취할 수 있는 학습에 쓰면 최악이고, 충실한 sim이 없는 곳에서 정책이 고정된 평가에 쓸 때만 정당하다.
+
+## 6. World Modeling과 지능의 관계
+
+**World modeling은 decision modeling보다 지능과 거리가 멀다.** 이 점을 놓치면 목적이 흐려진다. **우리의 목적은 '현실을 재현하는 것'이 아니라 '인공지능을 만드는 것'이다.**
+
+예측 능력과 의사결정 능력은 서로 다른 위계에 놓여 있다.
+
+- **예측(world model) 위계**: 세상을 가장 잘 예측하는 것은 **현실 그 자체**다. 두 번째는 **시뮬레이터**. 세 번째가 **학습된 신경망 월드 모델**이다. 충실한 시뮬레이터가 없는 도메인에서는 가운데가 빠져 *현실 ≫ 학습된 월드 모델*이 될 뿐, 순서가 뒤집히지는 않는다. 학습된 월드 모델이 최선의 예측자인 경우는 없다. 현실을 질의하기엔 비싸고 충실한 sim도 없을 때 남는 차선책이다.
+- **의사결정(decision model) 위계**: 범용 지능의 측면에서 가장 뛰어난 의사결정자는 **인간**이다. 현존 AI를 제외하면, 두 번째는 사실상 **"없다."**
+
+이 두 위계는 평행하지 않다. **세상을 가장 잘 예측하는 시스템이 곧 좋은 의사결정자는 아니다.** 시뮬레이터는 모델링된 범위 안에서는 매우 정확하게 예측하지만, 스스로 무엇을 할지 결정하지는 못한다. 지능의 핵심 신호는 "세상이 어떻게 변하는가"보다 "주어진 상황에서 무엇을 할 것인가"에 가깝다. ego가 박힌 action에 있다.
+
+world modeling이 ego, 즉 인간이 어떻게 행동하고 판단했는가를 부차적으로 다루는 순간, 지능을 구성하는 핵심 신호를 놓치게 된다. video world model에 대한 비판은 결국 한 문장이다. **픽셀을 잘 맞춘다고 해서 좋은 의사결정자가 되지는 않는다.**
+
+## 7. 대안 방향: 계층적 dual-system
+
+현재 VLA의 가장 근본적인 병목은 **context의 부재**다. 대부분의 VLA는 현재 관측에만 반응하는 memoryless 구조이고, 과거 상태와 행동을 길게 유지하는 시간맥락을 거의 모델링하지 않는다. 이전 프레임에서 서랍 안에 들어간 물체를 기억하지 못하고, 다단계 태스크의 어디까지 진행했는지 추적하지 못한다. **LLM을 context length 2에서 쓰는 격**이다. 이 레짐에서는 아무리 모델을 키워도 planning이 스케일할 공간이 없다. memoryless π0.5가 장기·기억 의존 벤치마크 RoboMME[@dai2026robomme]에서 17.9에 그치는 이유다.
+
+그런데 long context를 유지하면서 추론하는 것은 **이미 풀린 문제**다. frontier MLLM이 바로 그것이다. 수백만 토큰의 context window, episodic memory, world knowledge, in-context learning, 다단계 추론. 이 능력들은 LLM/MLLM scaling law[@kaplan2020scaling]를 따라 검증된 곡선 위에서 모델 크기와 함께 올라간다. 로봇을 위해 이 능력을 *처음부터 다시 만들* 이유가 없다.
+
+**dual-system은 이 이미 검증된 능력을 제어에 연결하는 접근이다.** 거대 MLLM을 System-2(느린 추론·planning)에 두고, 빠른 경량 정책을 System-1(고주파 제어)에 둔다. planning은 MLLM의 성숙한 scaling 곡선을 그대로 가져오고, control은 로보틱스 자체의 scaling 곡선(GEN-0[@gen0_2025]이 보인 것)으로 따로 키운다.
+
+이 접근은 WAM이 부딪히는 제약도 비껴간다.
+
+- **(J)의 이득은 latent 수준이면 충분하다.** pixel video generation은 보조 신호에 가깝지, 메인 backbone일 이유는 약하다.
+- **(D)의 데이터 병목을 WAM은 풀지 못한다.** "비로봇 데이터 활용"은 이미 co-training의 표준이고(π0.5 학습 데이터의 97.6%가 비타깃), generative video가 실제 teleop을 대체하지는 않는다.
+- **(P)의 forgetting 문제는 직접 고쳐지고 있다.** KI, co-train, 그리고 dual-system 자체가 그 방향이다.
+- **추론 비용.** WAM은 π0.5 대비 ≥4.8×[@zhang2026wamrobust] 느리다. 영상 생성을 건너뛰는 Fast-WAM[@yuan2026fastwam]·GigaWorld[@ye2026gigaworld]도 190·360ms로 π0(73ms)를 크게 웃돈다. 거대 S2를 제어 루프 밖에서 비동기로 돌리고, 빠른 S1만 고주파로 실행하는 계층 구조라야 이 지연을 피할 수 있다.
+
+단서를 하나 달아야 한다. 현재까지 가장 강한 로보틱스 scaling 증거(GEN-0)는 monolithic 반응형 정책에서 나왔다. 계층 구조가 scaling으로 이미 증명된 건 아니다. 하지만 monolith는 planning과 control을 aggregate success rate 하나로 합쳐버려 무엇이 실제로 스케일되는지 분리하기 어렵다. monolith가 control을 키우면서 planning까지 부산물로 다시 익히길 기다리는 것보다, 이미 검증된 두 곡선(MLLM의 planning과 반응형 정책의 control)을 결합하는 편이 더 합리적인 설계라고 본다.
+
+## 참고문헌
+
+::: {#refs}
+:::

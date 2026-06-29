@@ -1,6 +1,6 @@
 project:
   type: website
-  output-dir: ../suhwanchoi.me/blog
+  output-dir: _site
   resources:
     - "posts/**/*.png"
     - "posts/**/*.jpg"
@@ -22,7 +22,6 @@ website:
     right: |
       <a href="https://github.com/MilkClouds/suhwanchoi.me">Source</a>
 
-bibliography: refs.bib
 csl: ieee.csl
 
 format:

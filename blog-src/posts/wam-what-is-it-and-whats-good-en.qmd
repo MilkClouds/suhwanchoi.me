@@ -1,0 +1,125 @@
+---
+title: "WAM: What Is It, and What’s Actually Good About It?"
+description: "World-Action Models became a 2026 keyword. But what exactly are they, and what exactly is good about them? The claimed benefits split into Data scaling, Joint training, and Pretrained weight. Only Joint training is solid, and even that does not justify pixel-level video generation. When the world model sits outside the policy, it is much weaker as a training simulator than as an evaluator. And 'predicting the world well' and 'being a good decision-maker' are not parallel hierarchies."
+date: 2026-06-16
+categories: [robotics, world models, VLA, embodied AI]
+draft: true
+lang: en
+bibliography: wam-what-is-it-and-whats-good.bib
+citation:
+  id: choi2026wam
+  type: post-weblog
+  url: https://suhwanchoi.me/blog/posts/wam-what-is-it-and-whats-good-en.html
+google-scholar: true
+---
+
+*Korean version: [World Model, 무엇이고 어디에 좋은가?](wam-what-is-it-and-whats-good.html)*
+
+## 1. World Modeling and Decision Modeling
+
+**World modeling** learns to predict the next state, while **decision modeling** (commonly called policy learning) learns which action to take.
+
+These two are not cleanly separable concepts to begin with. Action generation happens within the state/action space, and **the very definition of "action" depends on where you place the ego, the acting subject.** In a world without an ego, everything is just state. In that sense, **world modeling is a superset of decision modeling**, and this containment relationship is what makes the WAM idea attractive.
+
+A **World-Action Model (WAM)** binds the two inside a single model and predicts future states and actions together, not only actions (the definition used by the WAM survey)[@wang2026wamsurvey]. The problem is that this appeal actually splits into three different claims, while the marketing sells them as one package.
+
+There is one more distinction to make: **where** the world model is placed. WAM fuses the world model *inside* the policy. But the world model can also live *outside* the policy as a separate module: either as a simulator in which the policy is trained with RL, or as an evaluator that scores policy performance. This post mainly discusses the fused form (WAM), and then separately covers the standalone-module use cases in Section 5.
+
+## 2. What Benefits Does World Modeling Offer?
+
+The WAM camp puts forward three benefits.
+
+- **(D) Data scaling.** You can train without action labels. Internet and human videos contain dynamics even without action annotations, so they can bypass the scarcity of robot action data, or so the claim goes.
+- **(J) Joint training.** State prediction loss provides a useful learning signal. Compared to sparse action signals, future prediction offers much richer supervision, so it strengthens representations as an auxiliary loss.
+- **(P) Pretrained weight.** The MLLM → VLA recipe has problems such as pixel-level non-robustness and catastrophic forgetting of MLLM capabilities. Therefore, if you **start from a video generation model**, you can bypass those problems. This is the core frame pushed by the NVIDIA blog[@nvidia2026wam]. The logic is: if you start from a video backbone that already knows language → visual change, the remaining video → action gap is smaller than the language → action grounding gap.
+
+These three axes are usually combined in the order video pretraining → action tuning, but the quality of evidence is completely different across axes. **They need to be evaluated separately.**
+
+## 3. Is This Even New? Why the Sudden Hype?
+
+It is not a new idea. The proposition that joint training strengthens policies already appeared in the Dreamer line, and UniVLA (BAAI)[@wang2025univla] in 2025 points in the same direction. UniPi, an early representative of cascaded WAM, is a 2023 paper[@du2023unipi]; GR-1[@wu2024gr1], an early representative of joint video-action prediction, and Play-LMP[@lynch2019play], an early representative of latent abstraction, are also old ideas (the lineage goes further back to visual foresight and PlaNet[@hafner2019planet]/Dreamer[@hafner2020dreamer]). Even the NVIDIA blog itself acknowledges that "the idea is not new"[@nvidia2026wam].
+
+So why did attention suddenly grow in 2026? There are two reasons.
+
+1. **Backbone feasibility.** Video backbones became strong (the CNN era → DiT-based Wan and Cosmos). More importantly, these strong backbones were released as open source. Previously, pretraining a video generator from scratch was beyond a typical lab budget. Now you can fine-tune a public model. The action side also advanced from per-step MLPs to action-chunk transformers and flow heads. The idea is not new; the tools only caught up now.
+2. **Compute incentive.** WAM is about **7.4×** more expensive than VLA in training compute (NVIDIA's own estimate: Wan-scale video pretrain proxy ≈ 51 ZFLOP vs efficient from-scratch VLA ≈ 6.9 ZFLOP)[@nvidia2026wam]. 7× training compute means 7× GPU demand. There is no reason compute sellers would dislike a compute-heavy paradigm. Given where the loudest claims are coming from, those claims should be filtered accordingly.
+
+## 4. Is It Actually Good?
+
+The core question is simple: **"What problem can only WAM solve?"** Going through the three axes one by one, the answer so far is closer to "none yet."
+
+Let me scope the critique first. This post targets **generative WAM-as-policy that produces pixel-level video inside the inference loop** (DreamZero-like systems). Representation-only or latent WAMs that skip generation at inference time (Fast-WAM and V-JEPA-like systems) are actually used below as evidence supporting my argument in (J). This is not a blanket critique of everything labeled "WAM." Uses that keep the world model outside the policy as a separate module (training simulator or evaluator) are handled in Section 5. Offline uses that synthesize *training data* with video rather than video for *inference* are a separate tool and out of scope here.
+
+### (J) Joint training: true, but pixels are unnecessary.
+
+Among the three axes, **(J) is clearly true.** Future prediction as an auxiliary loss improves policy representations. The cleanest apple-to-apple evidence is Dreamer 4[@hafner2025dreamer4]. On the same VPT Minecraft data, a VLA agent initialized from Gemma 3, despite that model having undergone more pretraining, achieved an iron-pickaxe success rate of **11.2%**, while Dreamer 4 achieved **29.0%**. That is almost 3×, and the paper itself calls it "nearly tripling." Even an intermediate model that puts only BC on top of Dreamer 4's latent representation, without imagination RL, reaches 16.9% and beats the Gemma 3 VLA.
+
+But there is an important caveat. Dreamer 4 is not an internet-scale video generation backbone. It is a latent block-causal transformer trained on domain data, and the source of the gain is latent-level world modeling. **The benefit of (J) comes from the latent level, not from pixel-space loss.** The same direction appears in V-JEPA 2 and VLA-JEPA (latent dynamics)[@assran2025vjepa2; @sun2026vlajepa], Fast-WAM (representation-only, skipping video generation at inference while approaching LingBot-VA)[@yuan2026fastwam], and VPP and mimic-video (decoding actions from intermediate representations of video models without generating pixels)[@hu2025vpp; @pai2025mimicvideo]. DreamZero's performance is also more naturally read, following Chris Paxton's interpretation[@paxton2026dreamzero], as "video generation acting as a powerful auxiliary loss" (still a hypothesis). If that is right, the reason to generate all the way down to pixels becomes weak, because it is likely an auxiliary signal that will eventually be distilled away.
+
+### (D) Data scaling: not a problem WAM solves.
+
+Data remains the core bottleneck in robot learning. But WAM does not solve this bottleneck. It still has to learn control from the same robot data, while adding video generation pretraining (about 7.4× training compute) on top.
+
+The key data lever claimed by WAM, "using non-robot data (web and human videos)," is not unique to WAM either. Look at the strongest open-world VLA, π0.5[@pi05_2025]: **97.6% of its training examples are not target-robot data** (mostly web multimodal data such as captioning, VQA, object localization, plus other robot data). The actual in-domain teleop is only **~400 hours**. Through simple co-training, without generating a single video frame, it performs 10–15 minute long-horizon tasks in previously unseen homes.
+
+The scaling picture is similar. Robotics has almost no *proper* scaling laws. The only case that essentially shows a predictive power law in a controlled model/data family is **GEN-0**[@gen0_2025]. It also observed *ossification*: 1B models ossify early and cannot absorb 270k-hour-scale pretraining, while 7B+ scale is needed for internalization. The reason robotics scaling had not been visible may be that most experiments were below this threshold. But even this sole scaling law comes from a **reactive policy** (next-action prediction), not WAM or video generation. Evidence that data and scale can work is only now beginning to appear, and WAM is not on that path.
+
+The bottleneck in robot data itself is also being relieved quickly. Large open datasets arrived densely in 2024–2025: DROID (76K demos, 13 institutions, 350h teleop)[@khazatsky2024droid], AgibotWorld Beta (1M+ trajectories, 217 tasks)[@agibotworld2025], RoboMIND (multi-embodiment, RSS 2025)[@wu2025robomind], and OXE[@oxe2024] (1M+ trajectories, though most are scripted and therefore quality-limited). With enough capital, the scale goes even higher. GEN-0[@gen0_2025] used 270K hours; GEN-1[@gen1_2026] used 500k hours of wearable human video (zero robot data, ~1h adaptation per task, but self-reported and not externally reproducible). In none of these paths does generative video function as the solution to the data bottleneck.
+
+So the summary is this: "using non-robot data" is already standard co-training, and robot data itself is growing quickly through open datasets and capital investment. Generative video does not contribute to that trend.
+
+### Performance and robustness claims: they need to be separated.
+
+It is true that DreamZero[@ye2026dreamzero] clearly beats π0.5 on DROID-Franka unseen tasks (task progress 49% vs 33%, success rate 22.5% vs 7.5%). But:
+
+- **Whether that performance comes from being WAM is a separate question.** The comparison is not clean. DreamZero uses a 14B-class video backbone (Wan2.1-I2V), while π0.5 is 3B-class. More importantly, DreamZero is trained only on DROID, so DROID evaluation is in-distribution. The NVIDIA blog[@nvidia2026wam] also explicitly frames WAM's three benefits as hypotheses, not conclusions, based on qualitative observations, simulations, and a small number of early signals.
+- **Robustness is a real place where WAM benefits, but it is neither unique to WAM nor free.** In a direct robustness comparison of WAMs[@zhang2026wamrobust], WAMs showed strong results against noise, lighting, and layout perturbations thanks to the spatiotemporal priors of video backbones (Cosmos-Policy **82.2** on LIBERO-Plus, LingBot-VA **74.2** on RoboTwin 2.0-Plus). But the same study clearly states that VLAs such as π0.5 can also reach comparable or higher robustness when trained with diverse data and dynamic-prediction objectives. And the price of this robustness is **≥4.8× inference latency**. "Adding a world model" also does not automatically mean robustness. WorldVLA[@cen2025worldvla] and UniVLA collapse most severely under camera perturbations on the same LIBERO-Plus benchmark[@fei2025liberoplus] (0.3 and 4.3). What matters is *how* the video prior is inserted, not the label "world model" itself. Robustness is a substantive strength that WAM can obtain relatively easily, but if π0.5 can catch up and you must pay 4.8× latency, it is not enough to justify the whole paradigm.
+
+### (P) Pretrained weight
+
+The idea that "the MLLM → VLA recipe has problems, so let's start from a video generation model" is weak. If the recipe has problems, the first step is to fix the recipe. And it is being fixed. Knowledge Insulation[@driess2025ki] isolates gradients from the action head to preserve MLLM pretrained capabilities (the π0.5 lineage), co-training (π-series and others) avoids catastrophic forgetting by training VLM data and robot data together, and dual-system approaches (OpenHelix[@cui2025openhelix] and others) separate the slow MLLM from the fast policy, bringing the large model's capabilities from outside the control loop. As discussed in Section 7, dual-system is also a direct answer to the more fundamental bottleneck in current VLAs: the absence of context.
+
+## 5. World Models *Outside* the Policy: Simulators and Evaluators
+
+There is also the approach of keeping the world model outside the policy as a separate module: either as a training simulator or as an evaluator. The world model is unfaithful in both cases, but the cost of that unfaithfulness differs completely by use.
+
+**Training simulator.** Since real-robot RL is sample-expensive, one line of work trains a policy with RL inside a learned video world model. WMPO[@zhu2025wmpo] is representative, followed by WoVR[@jiang2026wovr]. The fundamental problem is that when a policy is optimized *inside* a world model, it finds and exploits the places where the world model is inaccurate. WMPO gains exactly 0 on LIBERO-Long (13.7→13.7). WoVR raises the average from 46.2 to 69.2 by stacking three mitigation techniques, but all three ultimately require real rollouts. And the problems these techniques fight (error accumulation, fake success, distribution shift) are not present in a faithful simulator in the first place. **If you have a faithful sim, use it.** A world model as a training simulator survives only in the real world where a faithful simulator is unavailable.
+
+**Evaluator.** PI and NVIDIA's SC3-Eval[@tseng2026sc3eval] uses the world model not for training but for *evaluation*. It rolls policy checkpoints out inside the world model, estimates success rate, and uses that as a proxy for expensive real-world evaluation. In evaluation, the policy being scored is a fixed checkpoint, so it does not adapt to the world model. What you need is rank correlation, not optimization-grade gradients. The hallucination exploitation that is fatal in training does not structurally occur. Across seven VLA checkpoints, SC3-Eval reaches closed-loop Pearson 0.929, outperforming prior evaluators. There are still limits: fidelity drops OOD, task-specific training is required, and it remains only a triage proxy.
+
+PI's actual behavior follows this distinction. Policy *improvement* is done with real-robot RL (RLT[@pi_rlt] and similar), while video world models are used only as *evaluators*. A learned world model is third in the prediction hierarchy of Section 6. It is worst when used for training where the policy can exploit its errors, and justified only where there is no faithful sim and the policy is fixed for evaluation.
+
+## 6. The Relationship Between World Modeling and Intelligence
+
+**World modeling is further from intelligence than decision modeling.** If we miss this point, the objective gets blurry. **Our goal is not "to reproduce reality" but "to build artificial intelligence."**
+
+Predictive ability and decision-making ability sit in different hierarchies.
+
+- **Prediction (world model) hierarchy**: the best predictor of the world is **reality itself**. The second is a **simulator**. The third is a **learned neural world model**. In domains without a faithful simulator, the middle disappears and the order becomes *reality ≫ learned world model*; the ordering does not reverse. A learned world model is never the best predictor. It is the fallback when querying reality is expensive and there is no faithful sim.
+- **Decision (decision model) hierarchy**: from the standpoint of general intelligence, the best decision-maker is **humans**. Excluding current AI, second place is effectively **"nothing."**
+
+These two hierarchies are not parallel. **The system that predicts the world best is not necessarily a good decision-maker.** A simulator predicts very accurately within its modeled scope, but it does not decide what to do by itself. The core signal of intelligence is closer to "what should be done in this situation" than to "how does the world change." It lies in action that contains ego.
+
+The moment world modeling treats ego, meaning how humans acted and judged, as secondary, it misses the core signal that constitutes intelligence. The critique of video world models comes down to one sentence: **matching pixels well does not make you a good decision-maker.**
+
+## 7. Alternative Direction: Hierarchical Dual-System
+
+The most fundamental bottleneck in current VLAs is **the absence of context**. Most VLAs are memoryless structures that react only to the current observation, barely modeling the temporal context of past states and actions. They fail to remember objects placed inside drawers in previous frames and fail to track how far a multi-step task has progressed. **It is like using an LLM at context length 2.** In this regime, no matter how large the model becomes, planning has no room to scale. That is why the memoryless π0.5 reaches only 17.9 on the long-horizon, memory-dependent RoboMME benchmark[@dai2026robomme].
+
+But maintaining long context and reasoning over it is **already a solved problem**. Frontier MLLMs do exactly that: million-token context windows, episodic memory, world knowledge, in-context learning, and multi-step reasoning. These capabilities rise with model size along the tested curve of LLM/MLLM scaling laws[@kaplan2020scaling]. There is no reason to rebuild these capabilities from scratch for robotics.
+
+**Dual-system connects this already-validated capability to control.** A large MLLM is placed in System 2 (slow reasoning and planning), while a fast lightweight policy is placed in System 1 (high-frequency control). Planning rides the mature scaling curve of MLLMs, and control is scaled separately along robotics' own curve, such as the one shown by GEN-0[@gen0_2025].
+
+This approach also avoids the constraints WAM runs into.
+
+- **The benefit of (J) is sufficient at the latent level.** Pixel video generation looks closer to an auxiliary signal than a reason to be the main backbone.
+- **WAM does not solve the data bottleneck in (D).** "Using non-robot data" is already standard co-training (97.6% of π0.5's training data is non-target), and generative video does not replace real teleop.
+- **The forgetting problem in (P) is being addressed directly.** KI, co-training, and dual-system itself point in that direction.
+- **Inference cost.** WAM is ≥4.8× slower than π0.5[@zhang2026wamrobust]. Even Fast-WAM[@yuan2026fastwam] and GigaWorld[@ye2026gigaworld], which skip video generation, take 190ms and 360ms, far above π0's 73ms. A hierarchical structure that runs the large S2 asynchronously outside the control loop while running only the fast S1 at high frequency is the way to avoid this latency.
+
+One caveat is necessary. The strongest robotics scaling evidence so far (GEN-0) comes from a monolithic reactive policy. Hierarchical structure has not already been proven by scaling. But monoliths collapse planning and control into a single aggregate success rate, making it hard to separate what is actually scaling. Rather than waiting for a monolith to relearn planning as a byproduct while scaling control, it is a more rational design to combine two already-validated curves: MLLM planning and reactive-policy control.
+
+## References
+
+::: {#refs}
+:::

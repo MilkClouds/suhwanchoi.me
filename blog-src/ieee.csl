@@ -68,6 +68,41 @@
       <term name="month-09" form="short">Sep.</term>
     </terms>
   </locale>
+  <!-- Force English IEEE reference terms on Korean-language documents (lang: ko).
+       The document stays lang="ko"; only the bibliography terms are kept in English. -->
+  <locale xml:lang="ko">
+    <date form="text">
+      <date-part name="month" form="short" suffix=" "/>
+      <date-part name="day" form="numeric-leading-zeros" suffix=", "/>
+      <date-part name="year"/>
+    </date>
+    <terms>
+      <term name="et-al">et al.</term>
+      <term name="and">and</term>
+      <term name="in">in</term>
+      <term name="online">online</term>
+      <term name="accessed">accessed</term>
+      <term name="retrieved">retrieved</term>
+      <term name="available at">available</term>
+      <term name="presented at">presented at the</term>
+      <term name="chapter" form="short">ch.</term>
+      <term name="chapter-number" form="short">ch.</term>
+      <term name="volume" form="short">vol.</term>
+      <term name="issue" form="short">no.</term>
+      <term name="page" form="short">
+        <single>p.</single>
+        <multiple>pp.</multiple>
+      </term>
+      <term name="edition" form="short">ed.</term>
+      <term name="editor" form="short">
+        <single>Ed.</single>
+        <multiple>Eds.</multiple>
+      </term>
+      <term name="month-06" form="short">Jun.</term>
+      <term name="month-07" form="short">Jul.</term>
+      <term name="month-09" form="short">Sep.</term>
+    </terms>
+  </locale>
   <!-- Macros -->
   <macro name="status">
     <choose>
