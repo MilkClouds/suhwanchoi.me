@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Build the site (scripts/build.sh -- the same script CI runs) and serve _site/
-# locally, so a local preview is byte-for-byte what CI deploys.
+# Build the site (site/scripts/build.sh -- the same script CI runs) and serve
+# _site/ locally, so a local preview is byte-for-byte what CI deploys.
 #
-# Usage: bash scripts/serve.sh [port]   (default port 8000)
+# Usage: bash site/scripts/serve.sh [port]   (default port 8000)
 set -euo pipefail
 
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
+cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 port="${1:-8000}"
 
-bash scripts/build.sh
+bash site/scripts/build.sh
 
 # Pick a Python that actually runs (on Windows `python3` is often a Microsoft
 # Store stub that isn't real Python), preferring python3 on Unix.

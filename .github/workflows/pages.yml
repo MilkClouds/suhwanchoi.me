@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Build the deployable site via scripts/build.sh (the same script used for
+  # Build the deployable site via site/scripts/build.sh (the same script used for
   # local preview) and upload it as the Pages artifact. Runs on every push and
   # PR, so PRs exercise the real build.
   build:
@@ -46,7 +46,7 @@ jobs:
         uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Build site
-        run: bash scripts/build.sh
+        run: bash site/scripts/build.sh
 
       - uses: actions/configure-pages@v6
 

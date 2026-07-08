@@ -1,6 +1,6 @@
 [submodule "milkclouds"]
-	path = milkclouds
+	path = profile/milkclouds
 	url = https://github.com/MilkClouds/milkclouds.git
 [submodule "pitch"]
-	path = pitch
+	path = profile/pitch
 	url = https://github.com/MilkClouds/pitch.git
